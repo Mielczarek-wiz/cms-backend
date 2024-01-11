@@ -12,17 +12,17 @@ import put.poznan.user.role.UserCMS
 @Getter
 @Setter
 @ToString
-class Section (
+data class Section (
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0L,
-    var title: String = "",
-    var subtitle: String = "",
+    val id: Long = 0L,
+    val title: String = "",
+    val subtitle: String = "",
     @NotNull
-    var text: String = "",
-    var imgref: String = "",
-    var hidden: Boolean = true
+    val text: String = "",
+    val imgref: String = "",
+    val hidden: Boolean = true
 ) {
     @ManyToOne
     @JoinColumn(name="UsercmsID")

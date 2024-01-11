@@ -11,15 +11,15 @@ import put.poznan.user.role.UserCMS
 @Getter
 @Setter
 @ToString
-class General(
+data class General(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0L,
+    val id: Long = 0L,
     @NotNull
-    var key: String = "",
-    var value: String = "",
-    var description: String = "",
-    var hidden: Boolean = true
+    val key: String = "",
+    val value: String = "",
+    val description: String = "",
+    val hidden: Boolean = true
 ) {
     @ManyToOne
     @JoinColumn(name="UsercmsID")

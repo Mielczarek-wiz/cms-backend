@@ -12,16 +12,16 @@ import put.poznan.user.role.UserCMS
 @Getter
 @Setter
 @ToString
-class Infobox (
+data class Infobox (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0L,
+    val id: Long = 0L,
     @NotNull
-    var imgref: String = "",
+    val imgref: String = "",
     @NotNull
-    var information: String = "",
-    var subinformation: String = "",
-    var hidden: Boolean = true
+    val information: String = "",
+    val subinformation: String = "",
+    val hidden: Boolean = true
 ) {
     @ManyToOne
     @JoinColumn(name="UsercmsID")

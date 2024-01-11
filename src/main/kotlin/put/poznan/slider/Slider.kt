@@ -11,17 +11,17 @@ import put.poznan.user.role.UserCMS
 @Getter
 @Setter
 @ToString
-class Slider(
+data class Slider(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0L,
+    val id: Long = 0L,
     @NotNull
-    var title: String = "",
+    val title: String = "",
     @NotNull
-    var text: String = "",
+    val text: String = "",
     @NotNull
-    var imgref: String = "",
-    var hidden: Boolean = true
+    val imgref: String = "",
+    val hidden: Boolean = true
 ) {
         @ManyToOne
         @JoinColumn(name="UsercmsID")

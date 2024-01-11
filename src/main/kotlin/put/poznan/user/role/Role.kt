@@ -10,14 +10,14 @@ import org.jetbrains.annotations.NotNull
 @Getter
 @Setter
 @ToString
-class Role (
+data class Role (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0L,
+    val id: Long = 0L,
     @NotNull
-    var name: String = "",
+    val name: String = "",
 
-    var hidden: Boolean = true
+    val hidden: Boolean = true
 ) {
     @ManyToOne
     @JoinColumn(name="UsercmsID")

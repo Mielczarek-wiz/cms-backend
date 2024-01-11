@@ -11,13 +11,13 @@ import put.poznan.user.role.UserCMS
 @Getter
 @Setter
 @ToString
-class Type (
+data class Type (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0L,
+    val id: Long = 0L,
     @NotNull
-    var type: String = "",
-    var hidden: Boolean = true
+    val type: String = "",
+    val hidden: Boolean = true
 ) {
     @ManyToOne
     @JoinColumn(name="UsercmsID")
