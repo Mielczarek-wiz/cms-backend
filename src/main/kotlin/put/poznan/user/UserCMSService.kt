@@ -2,17 +2,18 @@ package put.poznan.user
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 import put.poznan.user.projection.UserDto
 import put.poznan.user.projection.UserDtoFormRegister
 import put.poznan.user.role.RoleRepository
-import put.poznan.user.role.UserCMS
 
 @Service
 class UserCMSService(
     private val userCMSRepository: UserCMSRepository,
-    private val roleRepository: RoleRepository
+    private val roleRepository: RoleRepository,
+    private val encoder: PasswordEncoder
 ) {
     fun createUser(newUser: UserDtoFormRegister): ResponseEntity<String> {
         val user = userCMSRepository.findUserCMSByEmail(newUser.email)
@@ -45,7 +46,7 @@ class UserCMSService(
             name = this.name,
             surname = this.surname,
             email = this.email,
-            password = this.password
+            password = encoder.encode(this.password)
         )
 
         userCMS.role = roleRepository.findRoleByName(this.role)

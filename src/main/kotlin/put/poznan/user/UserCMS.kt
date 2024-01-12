@@ -1,8 +1,9 @@
-package put.poznan.user.role
+package put.poznan.user
 
 import jakarta.persistence.*
 import lombok.*
 import org.jetbrains.annotations.NotNull
+import put.poznan.user.role.Role
 
 @Entity
 @AllArgsConstructor

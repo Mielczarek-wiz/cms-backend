@@ -4,7 +4,7 @@ import jakarta.persistence.*
 import lombok.*
 import org.jetbrains.annotations.NotNull
 import put.poznan.section.type.Type
-import put.poznan.user.role.UserCMS
+import put.poznan.user.UserCMS
 
 @Entity
 @AllArgsConstructor
