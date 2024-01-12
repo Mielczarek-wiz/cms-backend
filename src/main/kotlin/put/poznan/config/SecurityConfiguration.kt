@@ -2,7 +2,6 @@ package put.poznan.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -26,10 +25,12 @@ class SecurityConfiguration(
                 it
                     .requestMatchers("/auth", "/auth/refresh", "/error")
                     .permitAll()
-                    .requestMatchers(HttpMethod.POST, "/user")
+                    .requestMatchers("/general/exposed/**", "/page/exposed/**", "/section/exposed/**", "/slider/exposed/**", "/section/type/exposed/**", "/section/infobox/exposed/**")
                     .permitAll()
-                    .requestMatchers("/user**")
+                    .requestMatchers("/user/**")
                     .hasRole("Admin")
+                    .requestMatchers("/general/secured/**", "/page/secured/**", "/section/secured/**", "/slider/secured/**", "/section/type/secured/**", "/section/infobox/secured/**")
+                    .hasAnyRole("Moderator", "Admin")
                     .anyRequest()
                     .fullyAuthenticated()
             }
