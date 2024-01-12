@@ -6,5 +6,6 @@ import put.poznan.user.role.UserCMS
 
 @EnableJpaRepositories
 interface UserCMSRepository: JpaRepository<UserCMS, Long> {
-    fun findUserCMSByEmail(email: String): UserCMS
+    fun findUserCMSByEmail(email: String): UserCMS?
+    fun findUserCMSById(id: Long): UserCMS?
 }
