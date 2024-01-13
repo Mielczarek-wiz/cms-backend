@@ -1,8 +1,9 @@
-package put.poznan.user.role
+package put.poznan.user
 
 import jakarta.persistence.*
 import lombok.*
 import org.jetbrains.annotations.NotNull
+import put.poznan.user.role.Role
 
 @Entity
 @AllArgsConstructor
@@ -10,18 +11,18 @@ import org.jetbrains.annotations.NotNull
 @Getter
 @Setter
 @ToString
-class UserCMS(
+data class UserCMS(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0L,
+    val id: Long = 0L,
     @NotNull
-    var name: String = "",
+    val name: String = "",
     @NotNull
-    var surname: String = "",
+    val surname: String = "",
     @Column(unique = true)
-    var email: String = "",
+    val email: String = "",
     @NotNull
-    var password: String = ""
+    val password: String = ""
 ) {
     @ManyToOne
     @JoinColumn(name = "RoleID")

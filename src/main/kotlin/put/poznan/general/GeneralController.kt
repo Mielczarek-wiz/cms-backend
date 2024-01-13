@@ -14,4 +14,5 @@ class GeneralController {
     fun getAll(): String {
         return "Hello World"
     }
+
 }

@@ -1,11 +1,27 @@
 package put.poznan.user
 
 import lombok.RequiredArgsConstructor
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+import put.poznan.user.projection.UserDto
+import put.poznan.user.projection.UserDtoFormRegister
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = ["user"])
-class UserCMSController {
+class UserCMSController(
+    private val userCMSService: UserCMSService
+) {
+    @PostMapping
+    fun create(@RequestBody newUser: UserDtoFormRegister): ResponseEntity<String> =
+        userCMSService.createUser(newUser)
+
+    @GetMapping
+    fun getAll(): List<UserDto> = userCMSService.findAll()
+
+    @GetMapping("{id}")
+    fun getById(@PathVariable id: Long): UserDto? = userCMSService.findUserByID(id)
+
+    @DeleteMapping("{id}")
+    fun deleteUser(@PathVariable id: Long): ResponseEntity<Boolean> = userCMSService.deleteById(id)
 }
