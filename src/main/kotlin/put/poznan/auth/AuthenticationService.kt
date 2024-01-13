@@ -8,12 +8,14 @@ import put.poznan.auth.dto.AuthenticationResponse
 import put.poznan.config.JwtProperties
 import put.poznan.token.TokenService
 import put.poznan.user.CustomUserDetailsService
+import put.poznan.user.UserCMSRepository
 import java.util.*
 
 @Service
 class AuthenticationService(
     private val authManager: AuthenticationManager,
     private val userDetailsService: CustomUserDetailsService,
+    private val userCMSRepository: UserCMSRepository,
     private val tokenService: TokenService,
     private val jwtProperties: JwtProperties
 ) {
@@ -24,8 +26,11 @@ class AuthenticationService(
 
         val user = userDetailsService.loadUserByUsername(authRequest.email)
         val accessToken = tokenService.generate(userDetails = user, expirationDate = Date(System.currentTimeMillis() + jwtProperties.accessTokenExpiration))
-
+        val userToResponse = userCMSRepository.findUserCMSByEmail(authRequest.email)
         return AuthenticationResponse(
+            name = userToResponse?.name + " " + userToResponse?.surname,
+            email = authRequest.email,
+            role = userToResponse!!.role.name,
             accessToken = accessToken
         )
     }

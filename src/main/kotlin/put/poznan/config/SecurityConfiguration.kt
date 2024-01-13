@@ -14,7 +14,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 class SecurityConfiguration(
     private val authenticationProvider: AuthenticationProvider
 ) {
-
     @Bean
     fun securityFilterChain(
         http: HttpSecurity,
