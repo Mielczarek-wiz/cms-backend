@@ -1,4 +1,4 @@
-package put.poznan.user.projection
+package put.poznan.user.dto
 
 import lombok.NoArgsConstructor
 

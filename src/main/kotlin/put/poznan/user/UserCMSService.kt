@@ -5,8 +5,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
-import put.poznan.user.projection.UserDto
-import put.poznan.user.projection.UserDtoFormRegister
+import put.poznan.user.dto.UserDto
+import put.poznan.user.dto.UserDtoFormRegister
 import put.poznan.user.role.RoleRepository
 
 @Service
@@ -49,7 +49,7 @@ class UserCMSService(
             password = encoder.encode(this.password)
         )
 
-        userCMS.role = roleRepository.findRoleByName(this.role)
+        userCMS.role = roleRepository.findRoleByName(this.role)!!
 
         return userCMS
     }

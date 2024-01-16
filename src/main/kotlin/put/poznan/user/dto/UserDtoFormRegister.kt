@@ -1,4 +1,4 @@
-package put.poznan.user.projection
+package put.poznan.user.dto
 data class UserDtoFormRegister(
     val name: String,
     val surname: String,

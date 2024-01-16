@@ -3,8 +3,8 @@ package put.poznan.user
 import lombok.RequiredArgsConstructor
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import put.poznan.user.projection.UserDto
-import put.poznan.user.projection.UserDtoFormRegister
+import put.poznan.user.dto.UserDto
+import put.poznan.user.dto.UserDtoFormRegister
 
 @RestController
 @RequiredArgsConstructor
