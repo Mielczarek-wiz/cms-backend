@@ -13,7 +13,7 @@ class UserCMSController(
     private val userCMSService: UserCMSService
 ) {
     @PostMapping
-    fun create(@RequestBody newUser: UserDtoRequest): ResponseEntity<String> =
+    fun create(@RequestBody newUser: UserDtoRequest): ResponseEntity<Map<String, String>> =
         userCMSService.createUser(newUser)
 
     @GetMapping

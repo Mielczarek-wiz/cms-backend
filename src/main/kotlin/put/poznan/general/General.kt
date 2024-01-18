@@ -2,7 +2,6 @@ package put.poznan.general
 
 import jakarta.persistence.*
 import lombok.*
-import org.jetbrains.annotations.NotNull
 import put.poznan.user.UserCMS
 
 @Entity
@@ -15,15 +14,15 @@ data class General(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L,
-    @NotNull
+    @Column(unique = true)
     val key: String = "",
     val value: String = "",
     val description: String = "",
     val hidden: Boolean = true
 ) {
-    @ManyToOne
-    @JoinColumn(name="UsercmsID")
-    lateinit var user:UserCMS
+    @ManyToOne(optional = true)
+    @JoinColumn(name="UsercmsID", nullable = true)
+    var user:UserCMS? = null
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

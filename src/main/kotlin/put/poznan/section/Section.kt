@@ -24,9 +24,9 @@ data class Section (
     val imgref: String = "",
     val hidden: Boolean = true
 ) {
-    @ManyToOne
-    @JoinColumn(name="UsercmsID")
-    lateinit var user: UserCMS
+    @ManyToOne(optional = true)
+    @JoinColumn(name="UsercmsID", nullable = true)
+    var user: UserCMS? = null
 
     @ManyToOne
     @JoinColumn(name="TypeID")

@@ -16,12 +16,16 @@ class UserCMSService(
     private val roleRepository: RoleRepository,
     private val encoder: PasswordEncoder
 ) {
-    fun createUser(newUser: UserDtoRequest): ResponseEntity<String> {
+    fun createUser(newUser: UserDtoRequest): ResponseEntity<Map<String, String>> {
         val user = userCMSRepository.findUserCMSByEmail(newUser.email)
         return if(user == null){
             userCMSRepository.save(newUser.toModel())
-            ResponseEntity("User created", HttpStatus.OK)
-        } else ResponseEntity("Cannot create user", HttpStatus.BAD_REQUEST)
+            val responseBody = mapOf("message" to "User created")
+            ResponseEntity(responseBody, HttpStatus.OK)
+        } else {
+            val errorMessage = mapOf("message" to "Cannot create user with email: ${newUser.email}")
+            ResponseEntity(errorMessage, HttpStatus.BAD_REQUEST)
+        }
     }
 
     fun findUserByID(id: Long): UserDtoResponse =
@@ -51,10 +55,16 @@ class UserCMSService(
     fun delete(id: Long): ResponseEntity<Map<String, String>> {
         val user = userCMSRepository.findUserCMSById(id)
         return if(user != null){
+            if(user.role.name == "Admin"){
+                val errorMessage = mapOf("message" to "You cannot delete Administrators")
+                ResponseEntity(errorMessage, HttpStatus.BAD_REQUEST)
+            }
+            else {
                 preDelete(user)
                 userCMSRepository.delete(user)
                 val responseBody = mapOf("message" to "User deleted")
                 ResponseEntity(responseBody, HttpStatus.OK)
+            }
 
         } else {
             val errorMessage = mapOf("message" to "Cannot delete user with id: $id")
