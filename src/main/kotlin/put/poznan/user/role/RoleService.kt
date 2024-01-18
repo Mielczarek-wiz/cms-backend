@@ -48,17 +48,26 @@ class RoleService(
 
     fun delete(id: Long): ResponseEntity<Map<String, String>> {
         val role = roleRepository.findRoleById(id)
+
         return if(role != null){
-            roleRepository.delete(role)
-            val responseBody = mapOf("message" to "Role deleted")
-            ResponseEntity(responseBody, HttpStatus.OK)
-        } else{
+            val userExists = userCMSRepository.existsByRole(role)
+            if(userExists) {
+                val errorMessage = mapOf("message" to "Cannot delete role with users")
+                ResponseEntity(errorMessage, HttpStatus.BAD_REQUEST)
+            }
+            else {
+                roleRepository.delete(role)
+                val responseBody = mapOf("message" to "Role deleted")
+                ResponseEntity(responseBody, HttpStatus.OK)
+            }
+        }
+        else{
             val errorMessage = mapOf("message" to "Cannot delete role with id: $id")
             ResponseEntity(errorMessage, HttpStatus.BAD_REQUEST)
         }
     }
     private fun Role.toResponse(): RoleResponse {
-        val user = this.user.name + " " + this.user.surname
+        val user = this.user?.name + " " + this.user?.surname
         return RoleResponse(
             id = this.id,
             name = this.name,

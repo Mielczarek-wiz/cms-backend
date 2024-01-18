@@ -20,9 +20,9 @@ data class Role (
 
     val hidden: Boolean = true
 ) {
-    @ManyToOne
-    @JoinColumn(name="UsercmsID")
-    lateinit var user:UserCMS
+    @ManyToOne(optional = true)
+    @JoinColumn(name="UsercmsID", nullable = true)
+    var user:UserCMS? = null
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
