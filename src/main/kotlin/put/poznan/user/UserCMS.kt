@@ -52,4 +52,6 @@ data class UserCMS(
         result = 31 * result + role.hashCode()
         return result
     }
+
+
 }

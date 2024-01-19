@@ -1,11 +1,12 @@
-package put.poznan.user.projection
+package put.poznan.user.dto
 
 import lombok.NoArgsConstructor
 
 @NoArgsConstructor
-class UserDto(
+class UserDtoResponse(
     val id: Long,
     val name: String,
     val surname: String,
-    val email: String
+    val email: String,
+    val role: String,
 )
