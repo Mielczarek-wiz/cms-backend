@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
+import put.poznan.user.dto.DeletingUserCheckDtoRequest
 import put.poznan.user.dto.UserDtoRequest
 import put.poznan.user.dto.UserDtoResponse
 import put.poznan.user.role.Role
@@ -52,23 +53,29 @@ class UserCMSService(
             ResponseEntity(errorMessage, HttpStatus.BAD_REQUEST)
         }
     }
-    fun delete(id: Long): ResponseEntity<Map<String, String>> {
+    fun delete(id: Long, userCheck: DeletingUserCheckDtoRequest): ResponseEntity<Map<String, String>> {
         val user = userCMSRepository.findUserCMSById(id)
-        return if(user != null){
-            if(user.role.name == "Admin"){
-                val errorMessage = mapOf("message" to "You cannot delete Administrators")
+        return if(user != null && user.email == userCheck.user){
+            val errorMessage = mapOf("message" to "You cannot delete yourself")
+            ResponseEntity(errorMessage, HttpStatus.BAD_REQUEST)
+        } else {
+            if(user != null){
+                println("User: $user, id: $id, email: $userCheck.user")
+                if(user.role.name == "Admin"){
+                    val errorMessage = mapOf("message" to "You cannot delete Administrators")
+                    ResponseEntity(errorMessage, HttpStatus.BAD_REQUEST)
+                }
+                else {
+                    preDelete(user)
+                    userCMSRepository.delete(user)
+                    val responseBody = mapOf("message" to "User deleted")
+                    ResponseEntity(responseBody, HttpStatus.OK)
+                }
+
+            } else {
+                val errorMessage = mapOf("message" to "Cannot delete user with id: $id")
                 ResponseEntity(errorMessage, HttpStatus.BAD_REQUEST)
             }
-            else {
-                preDelete(user)
-                userCMSRepository.delete(user)
-                val responseBody = mapOf("message" to "User deleted")
-                ResponseEntity(responseBody, HttpStatus.OK)
-            }
-
-        } else {
-            val errorMessage = mapOf("message" to "Cannot delete user with id: $id")
-            ResponseEntity(errorMessage, HttpStatus.BAD_REQUEST)
         }
     }
     private fun preDelete(user: UserCMS): Void? {

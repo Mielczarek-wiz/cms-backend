@@ -3,6 +3,7 @@ package put.poznan.user
 import lombok.RequiredArgsConstructor
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import put.poznan.user.dto.DeletingUserCheckDtoRequest
 import put.poznan.user.dto.UserDtoRequest
 import put.poznan.user.dto.UserDtoResponse
 
@@ -24,5 +25,5 @@ class UserCMSController(
     @PutMapping("{id}")
     fun modifyUser(@PathVariable id: Long, @RequestBody updatedUser: UserDtoRequest): ResponseEntity<Map<String, String>> = userCMSService.modify(id, updatedUser)
     @DeleteMapping("{id}")
-    fun deleteUser(@PathVariable id: Long): ResponseEntity<Map<String, String>> = userCMSService.delete(id)
+    fun deleteUser(@PathVariable id: Long, @RequestBody email: DeletingUserCheckDtoRequest): ResponseEntity<Map<String, String>> = userCMSService.delete(id, email)
 }
