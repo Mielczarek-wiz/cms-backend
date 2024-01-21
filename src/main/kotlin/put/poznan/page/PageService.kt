@@ -3,8 +3,6 @@ package put.poznan.page
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import put.poznan.general.General
-import put.poznan.general.dto.GeneralDtoRequest
 import put.poznan.page.dto.PageDtoRequest
 import put.poznan.page.dto.PageDtoResponse
 import put.poznan.user.UserCMS
@@ -39,8 +37,8 @@ class PageService(
         val page = pageRepository.findPageById(id)
         val user = userCMSRepository.findUserCMSByEmail(updatedPage.user)
         return if(page != null && user != null){
-            val generalCopied = page.copy()
-            pageRepository.save(generalCopied.toUpdatedModel(user, updatedPage))
+            val pageCopied = page.copy()
+            pageRepository.save(pageCopied.toUpdatedModel(user, updatedPage))
             val responseBody = mapOf("message" to "Page updated")
             ResponseEntity(responseBody, HttpStatus.OK)
         } else {
@@ -63,14 +61,13 @@ class PageService(
 
     private fun Page.toResponse(): PageDtoResponse {
         val user = this.user?.name + " " + this.user?.surname
-        val page = this.page
         return PageDtoResponse(
                 id = this.id,
                 name = this.name,
                 link = this.link,
                 hidden = this.hidden,
                 user = user,
-                page = page
+                page = this.page
         )
     }
     private fun Page.toUpdatedModel(user: UserCMS, updatedPage: PageDtoRequest): Page {

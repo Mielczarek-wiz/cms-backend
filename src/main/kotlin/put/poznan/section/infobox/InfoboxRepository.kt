@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @EnableJpaRepositories
 interface InfoboxRepository: JpaRepository<Infobox, Long> {
+    fun findInfoboxById(id: Long): Infobox?
 }
