@@ -22,9 +22,9 @@ class PageService(
     fun create(newPage: PageDtoRequest): ResponseEntity<Map<String, String>> {
         val page = pageRepository.findPageByName(newPage.name)
         val user = userCMSRepository.findUserCMSByEmail(newPage.user)
-        val parentPage = page?.page!!
+        val parentPage = page?.page
         return if(user != null) {
-            pageRepository.save(newPage.toModel(user, parentPage))
+            pageRepository.save(newPage.toModel(user, parentPage!!))
             val responseBody = mapOf("message" to "Page created")
             ResponseEntity(responseBody, HttpStatus.OK)
         } else {
