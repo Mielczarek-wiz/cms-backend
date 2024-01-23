@@ -70,7 +70,7 @@ class SliderService (
             id = this.id,
             title = updatedSlider.title,
             text = updatedSlider.text,
-            imgref = updatedSlider.imgref,
+            imgref = updatedSlider.photo,
             hidden = updatedSlider.hidden,
         )
         slider.user = user
@@ -80,7 +80,7 @@ class SliderService (
         val slider = Slider(
             title = this.title,
             text = this.text,
-            imgref = this.imgref,
+            imgref = this.photo,
             hidden = this.hidden,
         )
         slider.user = user
