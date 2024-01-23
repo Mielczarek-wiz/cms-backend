@@ -7,5 +7,6 @@ data class PageDtoRequest(
         val link: String,
         val hidden: Boolean,
         val user: String,
-        val page: Page
+        val parentPage: String?,
+        val sections: List<String>
 )

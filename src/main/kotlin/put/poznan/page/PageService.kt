@@ -5,13 +5,17 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import put.poznan.page.dto.PageDtoRequest
 import put.poznan.page.dto.PageDtoResponse
+import put.poznan.section.Section
+import put.poznan.section.SectionRepository
+import put.poznan.section.infobox.Infobox
 import put.poznan.user.UserCMS
 import put.poznan.user.UserCMSRepository
 
 @Service
 class PageService(
         val pageRepository: PageRepository,
-        val userCMSRepository: UserCMSRepository
+        val userCMSRepository: UserCMSRepository,
+        val sectionRepository: SectionRepository
 ) {
     fun findAll(): List<PageDtoResponse> {
         val allPages = pageRepository.findAll()
@@ -22,9 +26,8 @@ class PageService(
     fun create(newPage: PageDtoRequest): ResponseEntity<Map<String, String>> {
         val page = pageRepository.findPageByName(newPage.name)
         val user = userCMSRepository.findUserCMSByEmail(newPage.user)
-        val parentPage = page?.page
-        return if(user != null) {
-            pageRepository.save(newPage.toModel(user, parentPage!!))
+        return if(page == null && user != null) {
+            pageRepository.save(newPage.toModel(user))
             val responseBody = mapOf("message" to "Page created")
             ResponseEntity(responseBody, HttpStatus.OK)
         } else {
@@ -61,13 +64,15 @@ class PageService(
 
     private fun Page.toResponse(): PageDtoResponse {
         val user = this.user?.name + " " + this.user?.surname
+        val parentPage = ""
         return PageDtoResponse(
                 id = this.id,
                 name = this.name,
                 link = this.link,
                 hidden = this.hidden,
                 user = user,
-                page = this.page
+                parentPage = parentPage,
+                sections = this.sections.map { it.title }
         )
     }
     private fun Page.toUpdatedModel(user: UserCMS, updatedPage: PageDtoRequest): Page {
@@ -78,17 +83,38 @@ class PageService(
                 hidden = updatedPage.hidden
         )
         page.user = user
-        page.page = updatedPage.page
+        if(updatedPage.parentPage == null || updatedPage.parentPage == ""){
+            page.page = null
+        }
+        else {
+            page.page = pageRepository.findPageByName(updatedPage.parentPage)
+        }
+        page.sections = updatedPage.sections.map { it.toSections() }
         return page
     }
-    private fun PageDtoRequest.toModel(user: UserCMS, parentPage: Page): Page {
+    private fun PageDtoRequest.toModel(user: UserCMS): Page {
         val page = Page(
                 name = this.name,
                 link = this.link,
                 hidden = this.hidden
         )
         page.user = user
-        page.page = parentPage
+        if(this.parentPage == null || this.parentPage == ""){
+            page.page = null
+        }
+        else {
+            page.page = pageRepository.findPageByName(this.parentPage)
+        }
+        page.sections = this.sections.map { it.toSections() }
         return page
+    }
+
+    private fun String.toSections(): Section {
+        val section = sectionRepository.findSectionByTitle(this)
+        if (section != null) {
+            return section
+        } else {
+            return Section()
+        }
     }
 }

@@ -6,7 +6,8 @@ data class PageDtoResponse(
         val id: Long,
         val name: String,
         val link: String,
-        val hidden: Boolean,
+        val parentPage: String,
+        val sections: List<String>,
         val user: String,
-        val page: Page
+        val hidden: Boolean
 )
