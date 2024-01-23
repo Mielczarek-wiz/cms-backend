@@ -6,7 +6,8 @@ data class SectionDtoResponse(
     val subtitle: String,
     val text: String,
     val imgref: String,
-    val hidden: Boolean,
+    val type: String,
+    val infoboxes: List<String>,
     val user: String,
-    val type: String
+    val hidden: Boolean
 )

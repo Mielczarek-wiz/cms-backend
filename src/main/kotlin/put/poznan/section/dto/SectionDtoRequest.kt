@@ -4,7 +4,8 @@ data class SectionDtoRequest(
     val title: String,
     val subtitle: String,
     val text: String,
-    val imgref: String,
+    val image: String,
+    val infoboxes: List<String>,
     val hidden: Boolean,
     val user: String,
     val type: String

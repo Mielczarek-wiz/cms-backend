@@ -1,12 +1,11 @@
 package put.poznan.section.infobox.dto
 
-import put.poznan.section.Section
+import org.springframework.web.multipart.MultipartFile
 
 data class InfoboxDtoRequest(
-    val imgref: String,
+    val icon: String,
     val information: String,
     val subinformation: String,
     val hidden: Boolean,
-    val user: String,
-    val section: Section
+    val user: String
 )

@@ -36,7 +36,7 @@ class TypeService (
         val user = userCMSRepository.findUserCMSByEmail(updatedType.user)
         return if(type != null && user != null){
             val typeCopied = type.copy()
-            typeRepository.save(typeCopied.toUpdatedModel(user))
+            typeRepository.save(typeCopied.toUpdatedModel(user, updatedType))
             val responseBody = mapOf("message" to "Type updated")
             ResponseEntity(responseBody, HttpStatus.OK)
         } else {
@@ -67,11 +67,11 @@ class TypeService (
         )
     }
 
-    private fun Type.toUpdatedModel(user: UserCMS): Type {
+    private fun Type.toUpdatedModel(user: UserCMS, updatedType: TypeDtoRequest): Type {
         val type = Type(
             id = this.id,
-            type = this.type,
-            hidden = this.hidden
+            type = updatedType.type,
+            hidden = updatedType.hidden
         )
         type.user = user
         return type

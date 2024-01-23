@@ -3,7 +3,7 @@ package put.poznan.section.infobox
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import put.poznan.section.Section
+import put.poznan.files.FileService
 import put.poznan.section.infobox.dto.InfoboxDtoRequest
 import put.poznan.section.infobox.dto.InfoboxDtoResponse
 import put.poznan.user.UserCMS
@@ -12,7 +12,8 @@ import put.poznan.user.UserCMSRepository
 @Service
 class InfoboxService (
     val infoboxRepository: InfoboxRepository,
-    val userCMSRepository: UserCMSRepository
+    val userCMSRepository: UserCMSRepository,
+    val fileService: FileService
 ) {
     fun findAll(): List<InfoboxDtoResponse> {
         val allInfoboxes = infoboxRepository.findAll()
@@ -21,10 +22,9 @@ class InfoboxService (
     }
 
     fun create(newInfobox: InfoboxDtoRequest): ResponseEntity<Map<String, String>> {
-        val user = userCMSRepository.findUserCMSByEmail(newInfobox.user)
-        val parentSection = newInfobox.section
-        return if (user !== null) {
-            infoboxRepository.save(newInfobox.toModel(user, parentSection))
+        val user = userCMSRepository.findUserCMSByEmail("basia@o2.pl")
+        return if (user != null) {
+            infoboxRepository.save(newInfobox.toModel(user))
             val responseBody = mapOf("message" to "Infobox created")
             ResponseEntity(responseBody, HttpStatus.OK)
         } else {
@@ -35,7 +35,7 @@ class InfoboxService (
 
     fun modify(id: Long, updatedInfobox: InfoboxDtoRequest): ResponseEntity<Map<String, String>> {
         val infobox = infoboxRepository.findInfoboxById(id)
-        val user = userCMSRepository.findUserCMSByEmail(updatedInfobox.user)
+        val user = userCMSRepository.findUserCMSByEmail("basia@o2.pl")
         return if(infobox != null && user != null){
             val infoboxCopied = infobox.copy()
             infoboxRepository.save(infoboxCopied.toUpdatedModel(user, updatedInfobox))
@@ -63,37 +63,34 @@ class InfoboxService (
         val user = this.user?.name + " " + this.user?.surname
         return InfoboxDtoResponse(
             id = this.id,
-            imgref = this.imgref,
             information = this.information,
             subinformation = this.subinformation,
-            hidden = this.hidden,
+            imgref = this.imgref,
             user = user,
-            section = this.section
+            hidden = this.hidden,
         )
     }
 
     private fun Infobox.toUpdatedModel(user: UserCMS, updatedInfobox: InfoboxDtoRequest): Infobox {
         val infobox = Infobox(
             id = this.id,
-            imgref = this.imgref,
-            information = this.information,
-            subinformation = this.subinformation,
-            hidden = this.hidden
+            imgref = updatedInfobox.icon,
+            information = updatedInfobox.information,
+            subinformation = updatedInfobox.subinformation,
+            hidden = updatedInfobox.hidden
         )
         infobox.user = user
-        infobox.section = updatedInfobox.section
         return infobox
     }
 
-    private fun InfoboxDtoRequest.toModel(user: UserCMS, parentSection: Section): Infobox {
+    private fun InfoboxDtoRequest.toModel(user: UserCMS): Infobox {
         val infobox = Infobox(
-            imgref = this.imgref,
+            imgref = this.icon,
             information = this.information,
             subinformation = this.subinformation,
             hidden = this.hidden
         )
         infobox.user = user
-        infobox.section = parentSection
         return infobox
     }
 
