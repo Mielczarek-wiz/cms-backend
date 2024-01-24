@@ -27,9 +27,6 @@ data class Infobox (
     @JoinColumn(name="UsercmsID", nullable = true)
     var user: UserCMS? = null
 
-    @ManyToOne
-    @JoinColumn(name="SectionID")
-    lateinit var section: Section
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -42,7 +39,6 @@ data class Infobox (
         if (subinformation != other.subinformation) return false
         if (hidden != other.hidden) return false
         if (user != other.user) return false
-        if (section != other.section) return false
 
         return true
     }
@@ -54,7 +50,6 @@ data class Infobox (
         result = 31 * result + subinformation.hashCode()
         result = 31 * result + hidden.hashCode()
         result = 31 * result + user.hashCode()
-        result = 31 * result + section.hashCode()
         return result
     }
 }

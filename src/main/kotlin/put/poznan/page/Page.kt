@@ -28,7 +28,7 @@ data class Page (
 
     @ManyToOne
     @JoinColumn(name="ParentID")
-    lateinit var page: Page
+    var page: Page? = null
 
     @ManyToMany
     var sections: List<Section> = listOf()

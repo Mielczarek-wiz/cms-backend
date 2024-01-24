@@ -3,6 +3,7 @@ package put.poznan.section
 import jakarta.persistence.*
 import lombok.*
 import org.jetbrains.annotations.NotNull
+import put.poznan.section.infobox.Infobox
 import put.poznan.section.type.Type
 import put.poznan.user.UserCMS
 
@@ -27,6 +28,10 @@ data class Section (
     @ManyToOne(optional = true)
     @JoinColumn(name="UsercmsID", nullable = true)
     var user: UserCMS? = null
+
+    @OneToMany
+    @JoinColumn(name="SectionID")
+    var infoboxes: List<Infobox> = listOf()
 
     @ManyToOne
     @JoinColumn(name="TypeID")

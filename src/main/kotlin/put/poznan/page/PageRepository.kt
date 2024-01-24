@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository
 @EnableJpaRepositories
 @Repository
 interface PageRepository: JpaRepository<Page, Long> {
+    fun findPageById(id: Long): Page?
+    fun findPageByName(name: String): Page?
 }

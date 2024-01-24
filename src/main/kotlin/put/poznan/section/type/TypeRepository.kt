@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @EnableJpaRepositories
 interface TypeRepository: JpaRepository<Type, Long> {
+    fun findTypeById(id: Long): Type?
+    fun findTypeByType(type: String): Type?
 }
