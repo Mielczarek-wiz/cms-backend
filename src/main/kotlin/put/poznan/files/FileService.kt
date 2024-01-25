@@ -15,12 +15,12 @@ class FileService {
 
     fun upload(file: MultipartFile, path: Path = uploadsFolderPath): String? {
         Files.createDirectories(uploadsFolderPath)
-        val uploadedTargetFilePath = file.originalFilename?.let { uploadsFolderPath.resolve(it) };
-        if (uploadedTargetFilePath != null) {
+        if (file.originalFilename != null && file.contentType?.contains("image")!!) {
+            val uploadedTargetFilePath = uploadsFolderPath.resolve(file.originalFilename!!)
             Files.copy(file.inputStream, uploadedTargetFilePath)
-        }
-        if (uploadedTargetFilePath?.isRegularFile() == true) {
-            return uploadedTargetFilePath.toString()
+            if (uploadedTargetFilePath.isRegularFile()) {
+                return uploadedTargetFilePath.toString()
+            }
         }
         return null
     }

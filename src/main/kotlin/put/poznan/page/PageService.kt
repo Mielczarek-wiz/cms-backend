@@ -31,7 +31,7 @@ class PageService(
             val responseBody = mapOf("message" to "Page created")
             ResponseEntity(responseBody, HttpStatus.OK)
         } else {
-            val errorMassage = mapOf("massage" to "Cannot create page")
+            val errorMassage = mapOf("message" to "Cannot create page")
             ResponseEntity(errorMassage, HttpStatus.BAD_REQUEST)
         }
     }

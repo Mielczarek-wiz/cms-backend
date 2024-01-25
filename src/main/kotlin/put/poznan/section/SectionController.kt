@@ -2,6 +2,7 @@ package put.poznan.section
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import lombok.RequiredArgsConstructor
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -23,16 +24,24 @@ class SectionController (
 
     @PostMapping("secured")
     fun create(@RequestParam("image") file: MultipartFile, @RequestParam("section") newSection: String): ResponseEntity<Map<String, String>> {
-        fileService.upload(file)
-        val section = mapper.readValue(newSection, SectionDtoRequest::class.java)
-        return sectionService.create(section)
+        if (fileService.upload(file) != null) {
+            val section = mapper.readValue(newSection, SectionDtoRequest::class.java)
+            return sectionService.create(section)
+        } else {
+            val errorMassage = mapOf("message" to "Only images can be uploaded")
+            return ResponseEntity(errorMassage, HttpStatus.BAD_REQUEST)
+        }
     }
 
     @PutMapping("secured/{id}")
     fun modify(@PathVariable id: Long, @RequestParam("image") file: MultipartFile, @RequestParam("section") newSection: String): ResponseEntity<Map<String, String>> {
-        fileService.upload(file)
-        val section = mapper.readValue(newSection, SectionDtoRequest::class.java)
-        return sectionService.modify(id, section)
+        if (fileService.upload(file) != null) {
+            val section = mapper.readValue(newSection, SectionDtoRequest::class.java)
+            return sectionService.modify(id, section)
+        } else {
+            val errorMassage = mapOf("message" to "Only images can be uploaded")
+            return ResponseEntity(errorMassage, HttpStatus.BAD_REQUEST)
+        }
     }
 
     @DeleteMapping("secured/{id}")
