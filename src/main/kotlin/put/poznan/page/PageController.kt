@@ -5,7 +5,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import put.poznan.page.dto.PageDtoRequest
 import put.poznan.page.dto.PageDtoResponse
-import put.poznan.page.dto.PageDtoResponseClient
+import put.poznan.page.dto.PageDtoResponseClientMenu
+import put.poznan.page.dto.PageDtoResponseClientPage
 
 @RestController
 @RequiredArgsConstructor
@@ -13,8 +14,10 @@ import put.poznan.page.dto.PageDtoResponseClient
 class PageController (
         val pageService: PageService
 ) {
+    @GetMapping("exposed/{name}")
+    fun getPage(@PathVariable name: String): PageDtoResponseClientPage = pageService.getPage(name)
     @GetMapping("exposed/menu")
-    fun getMenu(): List<PageDtoResponseClient> = pageService.getMenu()
+    fun getMenu(): List<PageDtoResponseClientMenu> = pageService.getMenu()
     @GetMapping("secured")
     fun getAll(): List<PageDtoResponse> = pageService.findAll()
 

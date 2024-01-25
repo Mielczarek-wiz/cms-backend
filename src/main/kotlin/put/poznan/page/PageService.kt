@@ -5,7 +5,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import put.poznan.page.dto.PageDtoRequest
 import put.poznan.page.dto.PageDtoResponse
-import put.poznan.page.dto.PageDtoResponseClient
+import put.poznan.page.dto.PageDtoResponseClientMenu
+import put.poznan.page.dto.PageDtoResponseClientPage
 import put.poznan.section.Section
 import put.poznan.section.SectionRepository
 import put.poznan.user.UserCMS
@@ -17,9 +18,14 @@ class PageService(
         val userCMSRepository: UserCMSRepository,
         val sectionRepository: SectionRepository
 ) {
-    fun getMenu(): List<PageDtoResponseClient> {
+
+    fun getPage(name: String): PageDtoResponseClientPage {
+        val page = pageRepository.findPageByName(name)
+        return page!!.toResponseClientPage()
+    }
+    fun getMenu(): List<PageDtoResponseClientMenu> {
         val allPages = pageRepository.findPagesByPageIsNull()
-        val responsePages = allPages.map { it.toResponseClient() }
+        val responsePages = allPages.map { it.toResponseClientMenu() }
         return responsePages
 
     }
@@ -125,16 +131,25 @@ class PageService(
     }
 
 
-    fun Page.toResponseClient(): PageDtoResponseClient {
+    fun Page.toResponseClientMenu(): PageDtoResponseClientMenu {
         val subpages = pageRepository.findPagesByPageId(this.id)
-        return PageDtoResponseClient(
+        return PageDtoResponseClientMenu(
                 id = this.id,
                 name = this.name,
                 link = this.link,
                 hidden = this.hidden,
-                subpages = subpages.map { it.toResponseClient() }
+                subpages = subpages.map { it.toResponseClientMenu() }
         )
     }
+
+    fun Page.toResponseClientPage(): PageDtoResponseClientPage {
+        return PageDtoResponseClientPage(
+                id = this.id,
+                name = this.name,
+                sections = this.sections
+        )
+    }
+
 
 
 }

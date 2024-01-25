@@ -26,16 +26,21 @@ class DummyDataLoader(
             roleRepository.save(adm)
             val basia = UserCMS(name = "Pani", surname = "Basia", email = "basia@o2.pl", password = encoder.encode("pass1"))
             basia.role = mod
-            userCMSRepository.save(basia)
-
             val wojtek = UserCMS(name = "Pan", surname = "Wojtek", email = "wojtek@o2.pl", password = encoder.encode("pass2"))
             wojtek.role = adm
-            userCMSRepository.save(wojtek)
 
-            mod.user = wojtek
-            adm.user = wojtek
+            val wojtekIn = userCMSRepository.findUserCMSByEmail(wojtek.email)
+            val basiaIn = userCMSRepository.findUserCMSByEmail(basia.email)
+            if (wojtekIn == null && basiaIn == null) {
+                userCMSRepository.save(wojtek)
+                userCMSRepository.save(basia)
+                mod.user = wojtek
+                adm.user = wojtek
 
-            roleRepository.saveAll(listOf(mod, adm))
+                roleRepository.saveAll(listOf(mod, adm))
+            }
+
+
 
         } catch (exception: Exception){
             throw Exception(exception.message)

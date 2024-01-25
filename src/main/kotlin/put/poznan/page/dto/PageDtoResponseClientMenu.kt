@@ -1,9 +1,9 @@
 package put.poznan.page.dto
 
-data class PageDtoResponseClient(
+data class PageDtoResponseClientMenu(
     val id: Long,
     val name: String,
     val link: String,
     val hidden: Boolean,
-    val subpages: List<PageDtoResponseClient> = listOf()
+    val subpages: List<PageDtoResponseClientMenu> = listOf()
 )
