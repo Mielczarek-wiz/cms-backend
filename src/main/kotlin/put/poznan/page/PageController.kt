@@ -3,9 +3,9 @@ package put.poznan.page
 import lombok.RequiredArgsConstructor
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import put.poznan.general.dto.GeneralDtoRequest
 import put.poznan.page.dto.PageDtoRequest
 import put.poznan.page.dto.PageDtoResponse
+import put.poznan.page.dto.PageDtoResponseClient
 
 @RestController
 @RequiredArgsConstructor
@@ -13,6 +13,8 @@ import put.poznan.page.dto.PageDtoResponse
 class PageController (
         val pageService: PageService
 ) {
+    @GetMapping("exposed/menu")
+    fun getMenu(): List<PageDtoResponseClient> = pageService.getMenu()
     @GetMapping("secured")
     fun getAll(): List<PageDtoResponse> = pageService.findAll()
 

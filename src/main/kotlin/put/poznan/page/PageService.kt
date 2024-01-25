@@ -5,9 +5,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import put.poznan.page.dto.PageDtoRequest
 import put.poznan.page.dto.PageDtoResponse
+import put.poznan.page.dto.PageDtoResponseClient
 import put.poznan.section.Section
 import put.poznan.section.SectionRepository
-import put.poznan.section.infobox.Infobox
 import put.poznan.user.UserCMS
 import put.poznan.user.UserCMSRepository
 
@@ -17,6 +17,12 @@ class PageService(
         val userCMSRepository: UserCMSRepository,
         val sectionRepository: SectionRepository
 ) {
+    fun getMenu(): List<PageDtoResponseClient> {
+        val allPages = pageRepository.findPagesByPageIsNull()
+        val responsePages = allPages.map { it.toResponseClient() }
+        return responsePages
+
+    }
     fun findAll(): List<PageDtoResponse> {
         val allPages = pageRepository.findAll()
         val responsePages = allPages.map { it.toResponse() }
@@ -117,4 +123,18 @@ class PageService(
             return Section()
         }
     }
+
+
+    fun Page.toResponseClient(): PageDtoResponseClient {
+        val subpages = pageRepository.findPagesByPageId(this.id)
+        return PageDtoResponseClient(
+                id = this.id,
+                name = this.name,
+                link = this.link,
+                hidden = this.hidden,
+                subpages = subpages.map { it.toResponseClient() }
+        )
+    }
+
+
 }
