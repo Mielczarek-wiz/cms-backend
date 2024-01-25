@@ -2,6 +2,7 @@ package put.poznan.slider
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import lombok.RequiredArgsConstructor
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -24,16 +25,24 @@ class SliderController (
 
     @PostMapping("secured")
     fun create(@RequestParam("photo") file: MultipartFile, @RequestParam("slider") newSlider: String): ResponseEntity<Map<String, String>> {
-        fileService.upload(file)
-        val slider = mapper.readValue(newSlider, SliderDtoRequest::class.java)
-        return sliderService.create(slider)
+        if (fileService.upload(file) != null) {
+            val slider = mapper.readValue(newSlider, SliderDtoRequest::class.java)
+            return sliderService.create(slider)
+        } else {
+            val errorMassage = mapOf("message" to "Only images can be uploaded")
+            return ResponseEntity(errorMassage, HttpStatus.BAD_REQUEST)
+        }
     }
 
     @PutMapping("secured/{id}")
     fun modify(@PathVariable id: Long, @RequestParam("photo") file: MultipartFile, @RequestParam("slider") updatedSlider: String): ResponseEntity<Map<String, String>> {
-        fileService.upload(file)
-        val slider = mapper.readValue(updatedSlider, SliderDtoRequest::class.java)
-        return sliderService.modify(id, slider)
+        if (fileService.upload(file) != null) {
+            val slider = mapper.readValue(updatedSlider, SliderDtoRequest::class.java)
+            return sliderService.modify(id, slider)
+        } else {
+            val errorMassage = mapOf("message" to "Only images can be uploaded")
+            return ResponseEntity(errorMassage, HttpStatus.BAD_REQUEST)
+        }
     }
 
     @DeleteMapping("secured/{id}")

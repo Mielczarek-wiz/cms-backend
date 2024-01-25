@@ -28,7 +28,7 @@ class InfoboxService (
             val responseBody = mapOf("message" to "Infobox created")
             ResponseEntity(responseBody, HttpStatus.OK)
         } else {
-            val errorMassage = mapOf("massage" to "Cannot create infobox")
+            val errorMassage = mapOf("message" to "Cannot create infobox")
             ResponseEntity(errorMassage, HttpStatus.BAD_REQUEST)
         }
     }
