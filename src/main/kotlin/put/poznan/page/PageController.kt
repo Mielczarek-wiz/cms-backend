@@ -14,8 +14,8 @@ import put.poznan.page.dto.PageDtoResponseClientPage
 class PageController (
         val pageService: PageService
 ) {
-    @GetMapping("exposed/{name}")
-    fun getPage(@PathVariable name: String): PageDtoResponseClientPage = pageService.getPage(name)
+    @GetMapping("exposed/{link}")
+    fun getPage(@PathVariable link: String): PageDtoResponseClientPage = pageService.getPage(link)
     @GetMapping("exposed/menu")
     fun getMenu(): List<PageDtoResponseClientMenu> = pageService.getMenu()
     @GetMapping("secured")

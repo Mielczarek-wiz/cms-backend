@@ -1,5 +1,6 @@
 package put.poznan.page
 
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -9,6 +10,9 @@ import put.poznan.page.dto.PageDtoResponseClientMenu
 import put.poznan.page.dto.PageDtoResponseClientPage
 import put.poznan.section.Section
 import put.poznan.section.SectionRepository
+import put.poznan.section.dto.SectionDtoResponseClient
+import put.poznan.section.infobox.Infobox
+import put.poznan.section.infobox.dto.InfoboxDtoResponseClient
 import put.poznan.user.UserCMS
 import put.poznan.user.UserCMSRepository
 
@@ -16,11 +20,13 @@ import put.poznan.user.UserCMSRepository
 class PageService(
         val pageRepository: PageRepository,
         val userCMSRepository: UserCMSRepository,
-        val sectionRepository: SectionRepository
+        val sectionRepository: SectionRepository,
+
 ) {
 
-    fun getPage(name: String): PageDtoResponseClientPage {
-        val page = pageRepository.findPageByName(name)
+    private val logger = LoggerFactory.getLogger(PageService::class.java)
+    fun getPage(link: String): PageDtoResponseClientPage {
+        val page = pageRepository.findPageByLink(link)
         return page!!.toResponseClientPage()
     }
     fun getMenu(): List<PageDtoResponseClientMenu> {
@@ -131,7 +137,7 @@ class PageService(
     }
 
 
-    fun Page.toResponseClientMenu(): PageDtoResponseClientMenu {
+    private fun Page.toResponseClientMenu(): PageDtoResponseClientMenu {
         val subpages = pageRepository.findPagesByPageId(this.id)
         return PageDtoResponseClientMenu(
                 id = this.id,
@@ -142,14 +148,36 @@ class PageService(
         )
     }
 
-    fun Page.toResponseClientPage(): PageDtoResponseClientPage {
+    private fun Page.toResponseClientPage(): PageDtoResponseClientPage {
         return PageDtoResponseClientPage(
                 id = this.id,
                 name = this.name,
-                sections = this.sections
+                sections = this.sections.map { it.toResponseSectionClient() }
         )
     }
 
+    private fun Section.toResponseSectionClient(): SectionDtoResponseClient {
+        return SectionDtoResponseClient(
+                id = this.id,
+                title = this.title,
+                subtitle = this.subtitle,
+                text = this.text,
+                imgref = this.imgref,
+                hidden = this.hidden,
+                infoboxes = this.infoboxes.map { it.toResponseInfoboxClient() },
+                type = this.type.type
+        )
+    }
+    private fun Infobox.toResponseInfoboxClient(): InfoboxDtoResponseClient {
+        return InfoboxDtoResponseClient(
+                id = this.id,
+                imgref = this.imgref,
+                information = this.information,
+                subinformation = this.subinformation,
+                hidden = this.hidden,
+
+        )
+    }
 
 
 }
