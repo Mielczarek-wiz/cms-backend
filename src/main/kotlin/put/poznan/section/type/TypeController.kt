@@ -3,8 +3,6 @@ package put.poznan.section.type
 import lombok.RequiredArgsConstructor
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import put.poznan.section.infobox.dto.InfoboxDtoRequest
-import put.poznan.section.infobox.dto.InfoboxDtoResponse
 import put.poznan.section.type.dto.TypeDtoRequest
 import put.poznan.section.type.dto.TypeDtoResponse
 

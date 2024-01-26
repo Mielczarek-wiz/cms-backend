@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service
 import put.poznan.config.JwtProperties
 import java.util.*
 
+
 @Service
 class TokenService(
     jwtProperties: JwtProperties
@@ -34,8 +35,13 @@ class TokenService(
     fun extractEmail(token: String): String? =
         getAllClaims(token).subject
 
-    fun isExpired(token: String): Boolean =
-        getAllClaims(token).expiration.before(Date(System.currentTimeMillis()))
+    fun isExpired(token: String): Boolean {
+        return try {
+            getAllClaims(token).expiration.before(Date(System.currentTimeMillis()))
+        } catch (e: Exception) {
+            true
+        }
+    }
 
     fun isValid(token: String, userDetails: UserDetails): Boolean {
         val email = extractEmail(token)
@@ -43,7 +49,7 @@ class TokenService(
         return userDetails.username == email && !isExpired(token)
     }
     private fun getAllClaims(token: String): Claims {
-        val parser= Jwts.parser().verifyWith(secretKey).build()
+        val parser = Jwts.parser().verifyWith(secretKey).build()
 
         return parser.parseSignedClaims(token).payload
     }

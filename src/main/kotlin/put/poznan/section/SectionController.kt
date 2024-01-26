@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile
 import put.poznan.files.FileService
 import put.poznan.section.dto.SectionDtoRequest
 import put.poznan.section.dto.SectionDtoResponse
-import put.poznan.section.infobox.dto.InfoboxDtoRequest
 
 @RestController
 @RequiredArgsConstructor
@@ -24,23 +23,23 @@ class SectionController (
 
     @PostMapping("secured")
     fun create(@RequestParam("image") file: MultipartFile, @RequestParam("section") newSection: String): ResponseEntity<Map<String, String>> {
-        if (fileService.upload(file) != null) {
+        return if (fileService.upload(file, "resources/files/section")) {
             val section = mapper.readValue(newSection, SectionDtoRequest::class.java)
-            return sectionService.create(section)
+            sectionService.create(section)
         } else {
             val errorMassage = mapOf("message" to "Only images can be uploaded")
-            return ResponseEntity(errorMassage, HttpStatus.BAD_REQUEST)
+            ResponseEntity(errorMassage, HttpStatus.BAD_REQUEST)
         }
     }
 
     @PutMapping("secured/{id}")
     fun modify(@PathVariable id: Long, @RequestParam("image") file: MultipartFile, @RequestParam("section") newSection: String): ResponseEntity<Map<String, String>> {
-        if (fileService.upload(file) != null) {
+        return if (fileService.upload(file, "resources/files/section")) {
             val section = mapper.readValue(newSection, SectionDtoRequest::class.java)
-            return sectionService.modify(id, section)
+            sectionService.modify(id, section)
         } else {
             val errorMassage = mapOf("message" to "Only images can be uploaded")
-            return ResponseEntity(errorMassage, HttpStatus.BAD_REQUEST)
+            ResponseEntity(errorMassage, HttpStatus.BAD_REQUEST)
         }
     }
 

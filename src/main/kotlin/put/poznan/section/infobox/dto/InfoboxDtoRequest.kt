@@ -1,7 +1,5 @@
 package put.poznan.section.infobox.dto
 
-import org.springframework.web.multipart.MultipartFile
-
 data class InfoboxDtoRequest(
     val icon: String,
     val information: String,

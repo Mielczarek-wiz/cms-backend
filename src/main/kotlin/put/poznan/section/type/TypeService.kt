@@ -33,7 +33,7 @@ class TypeService (
 
     fun modify(id: Long, updatedType: TypeDtoRequest): ResponseEntity<Map<String, String>> {
         val type = typeRepository.findTypeById(id)
-        val user = userCMSRepository.findUserCMSByEmail(updatedType.user)
+        val user = type?.user
         return if(type != null && user != null){
             val typeCopied = type.copy()
             typeRepository.save(typeCopied.toUpdatedModel(user, updatedType))

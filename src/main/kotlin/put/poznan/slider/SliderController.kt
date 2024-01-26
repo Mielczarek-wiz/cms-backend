@@ -7,9 +7,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import put.poznan.files.FileService
-import put.poznan.section.dto.SectionDtoRequest
-import put.poznan.section.dto.SectionDtoResponse
 import put.poznan.slider.dto.SliderDtoRequest
+import put.poznan.slider.dto.SliderDtoResponseClient
 import put.poznan.slider.dto.SliderDtoResponse
 
 @RestController
@@ -20,12 +19,15 @@ class SliderController (
     val fileService: FileService,
     val mapper: ObjectMapper
 ) {
+    @GetMapping("exposed")
+    fun getAllClient(): List<SliderDtoResponseClient> = sliderService.findAllClient()
+
     @GetMapping("secured")
     fun getAll(): List<SliderDtoResponse> = sliderService.findAll()
 
     @PostMapping("secured")
     fun create(@RequestParam("photo") file: MultipartFile, @RequestParam("slider") newSlider: String): ResponseEntity<Map<String, String>> {
-        if (fileService.upload(file) != null) {
+        if (fileService.upload(file, "resources/files/slider")) {
             val slider = mapper.readValue(newSlider, SliderDtoRequest::class.java)
             return sliderService.create(slider)
         } else {
@@ -36,7 +38,7 @@ class SliderController (
 
     @PutMapping("secured/{id}")
     fun modify(@PathVariable id: Long, @RequestParam("photo") file: MultipartFile, @RequestParam("slider") updatedSlider: String): ResponseEntity<Map<String, String>> {
-        if (fileService.upload(file) != null) {
+        if (fileService.upload(file, "resources/files/slider")) {
             val slider = mapper.readValue(updatedSlider, SliderDtoRequest::class.java)
             return sliderService.modify(id, slider)
         } else {
