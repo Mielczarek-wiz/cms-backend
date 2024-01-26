@@ -12,7 +12,6 @@ import put.poznan.general.dto.GeneralDtoResponse
 class GeneralController(
     val generalService: GeneralService
 ) {
-
     @GetMapping("secured")
     fun getAll(): List<GeneralDtoResponse> = generalService.findAll()
 
@@ -24,5 +23,4 @@ class GeneralController(
 
     @DeleteMapping("secured/{id}")
     fun delete(@PathVariable id: Long): ResponseEntity<Map<String, String>> = generalService.delete(id)
-
 }

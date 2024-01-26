@@ -3,7 +3,6 @@ package put.poznan.section.infobox
 import jakarta.persistence.*
 import lombok.*
 import org.jetbrains.annotations.NotNull
-import put.poznan.section.Section
 import put.poznan.user.UserCMS
 
 @Entity

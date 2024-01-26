@@ -21,6 +21,9 @@ class PageController (
     @GetMapping("secured")
     fun getAll(): List<PageDtoResponse> = pageService.findAll()
 
+    @GetMapping("secured/parent-pages/{name}")
+    fun getAvailableParentPages(@PathVariable name: String): List<PageDtoResponse> = pageService.findAvailableParentPages(name)
+
     @PostMapping("secured")
     fun create(@RequestBody newPage: PageDtoRequest): ResponseEntity<Map<String, String>> = pageService.create(newPage)
 

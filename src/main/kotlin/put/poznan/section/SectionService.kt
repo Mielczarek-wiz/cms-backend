@@ -7,10 +7,11 @@ import put.poznan.section.dto.SectionDtoRequest
 import put.poznan.section.dto.SectionDtoResponse
 import put.poznan.section.infobox.Infobox
 import put.poznan.section.infobox.InfoboxRepository
-import put.poznan.section.type.Type
 import put.poznan.section.type.TypeRepository
 import put.poznan.user.UserCMS
 import put.poznan.user.UserCMSRepository
+import java.nio.file.Paths
+import kotlin.io.path.deleteIfExists
 
 @Service
 class SectionService (
@@ -27,7 +28,7 @@ class SectionService (
     fun create(newSection: SectionDtoRequest): ResponseEntity<Map<String, String>> {
         val section = sectionRepository.findSectionByTitle(newSection.title)
         val user = userCMSRepository.findUserCMSByEmail(newSection.user)
-        return if(user != null){
+        return if(section == null && user != null){
             sectionRepository.save(newSection.toModel(user))
             val responseBody = mapOf("message" to "Section created")
             ResponseEntity(responseBody, HttpStatus.OK)
@@ -38,7 +39,7 @@ class SectionService (
     }
     fun modify(id: Long, updatedSection: SectionDtoRequest): ResponseEntity<Map<String, String>> {
         val section = sectionRepository.findSectionById(id)
-        val user = userCMSRepository.findUserCMSByEmail(updatedSection.user)
+        val user = section?.user
         return if(section != null && user != null){
             val sectionCopied = section.copy()
             sectionRepository.save(sectionCopied.toUpdatedModel(user, updatedSection))
@@ -51,13 +52,13 @@ class SectionService (
     }
     fun delete(id: Long): ResponseEntity<Map<String, String>> {
         val section = sectionRepository.findSectionById(id)
-        return if (section != null){
+        return if (section != null && Paths.get("resources/files/infobox/" + section.imgref).deleteIfExists()) {
             sectionRepository.delete(section)
             val responseBody = mapOf("message" to "Section deleted")
             ResponseEntity(responseBody, HttpStatus.OK)
-        }else {
+        } else {
             val errorMessage = mapOf("message" to "Cannot delete section with id: $id")
-            ResponseEntity(errorMessage, HttpStatus.BAD_REQUEST)
+             ResponseEntity(errorMessage, HttpStatus.BAD_REQUEST)
         }
     }
     private fun Section.toResponse(): SectionDtoResponse {
@@ -107,10 +108,6 @@ class SectionService (
 
     private fun String.toInfoboxes(): Infobox {
         val infobox = infoboxRepository.findInfoboxByInformation(this)
-        if (infobox != null) {
-            return infobox
-        } else {
-            return Infobox()
-        }
+        return infobox ?: Infobox()
     }
 }

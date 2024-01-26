@@ -20,8 +20,7 @@ import put.poznan.user.UserCMSRepository
 class PageService(
         val pageRepository: PageRepository,
         val userCMSRepository: UserCMSRepository,
-        val sectionRepository: SectionRepository,
-
+        val sectionRepository: SectionRepository
 ) {
 
     private val logger = LoggerFactory.getLogger(PageService::class.java)
@@ -37,6 +36,13 @@ class PageService(
     }
     fun findAll(): List<PageDtoResponse> {
         val allPages = pageRepository.findAll()
+        val responsePages = allPages.map { it.toResponse() }
+        return responsePages
+    }
+
+    fun findAvailableParentPages(name: String): List<PageDtoResponse> {
+        val allPages = pageRepository.findAll()
+        allPages.removeIf{ name == it.name || it.page?.page != null }
         val responsePages = allPages.map { it.toResponse() }
         return responsePages
     }

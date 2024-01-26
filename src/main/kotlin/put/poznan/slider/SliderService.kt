@@ -3,32 +3,35 @@ package put.poznan.slider
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import put.poznan.files.FileService
 import put.poznan.slider.dto.SliderDtoRequest
+import put.poznan.slider.dto.SliderDtoResponseClient
 import put.poznan.slider.dto.SliderDtoResponse
 import put.poznan.user.UserCMS
 import put.poznan.user.UserCMSRepository
+import java.nio.file.Paths
+import kotlin.io.path.deleteIfExists
 
 @Service
 class SliderService (
     val sliderRepository: SliderRepository,
-    val userCMSRepository: UserCMSRepository
+    val userCMSRepository: UserCMSRepository,
+    val fileService: FileService
 ) {
+    fun findAllClient(): List<SliderDtoResponseClient> {
+        val allSliders = sliderRepository.findAll()
+        val responseSliders = allSliders.map { it.toResponseClient() }
+        return responseSliders
+    }
+
     fun findAll(): List<SliderDtoResponse> {
         val allSliders = sliderRepository.findAll()
         val responseSliders = allSliders.map { it.toResponse() }
         return responseSliders
     }
-    private fun Slider.toResponse(): SliderDtoResponse {
-        val user = this.user?.name + " " + this.user?.surname
-        return SliderDtoResponse(
-            id= this.id,
-            title = this.title,
-            text = this.text,
-            imgref = this.imgref,
-            hidden = this.hidden,
-            user = user
-        )
-    }
+
+
+
     fun create(newSlider: SliderDtoRequest): ResponseEntity<Map<String, String>> {
         val section = sliderRepository.findSliderByTitle(newSlider.title)
         val user = userCMSRepository.findUserCMSByEmail(newSlider.user)
@@ -43,7 +46,7 @@ class SliderService (
     }
     fun modify(id: Long, updatedSlider: SliderDtoRequest): ResponseEntity<Map<String, String>> {
         val slider = sliderRepository.findSliderById(id)
-        val user = userCMSRepository.findUserCMSByEmail(updatedSlider.user)
+        val user = slider?.user
         return if(slider != null && user != null){
             val sectionCopied = slider.copy()
             sliderRepository.save(sectionCopied.toUpdatedModel(user, updatedSlider))
@@ -57,14 +60,39 @@ class SliderService (
     fun delete(id: Long): ResponseEntity<Map<String, String>> {
         val slider = sliderRepository.findSliderById(id)
         return if (slider != null){
+            Paths.get("resources/files/infobox/" + slider.imgref).deleteIfExists()
             sliderRepository.delete(slider)
             val responseBody = mapOf("message" to "Slider deleted")
             ResponseEntity(responseBody, HttpStatus.OK)
-        }else {
+        } else {
             val errorMessage = mapOf("message" to "Cannot delete slider with id: $id")
             ResponseEntity(errorMessage, HttpStatus.BAD_REQUEST)
         }
     }
+
+    private fun Slider.toResponse(): SliderDtoResponse {
+        val user = this.user?.name + " " + this.user?.surname
+        return SliderDtoResponse(
+            id= this.id,
+            title = this.title,
+            text = this.text,
+            imgref = this.imgref,
+            hidden = this.hidden,
+            user = user
+        )
+    }
+
+    private fun Slider.toResponseClient(): SliderDtoResponseClient {
+        val image = fileService.download("resources/files/slider/" + this.imgref)
+        return SliderDtoResponseClient(
+            id= this.id,
+            title = this.title,
+            text = this.text,
+            image = image,
+            hidden = this.hidden,
+        )
+    }
+
     private fun Slider.toUpdatedModel(user: UserCMS, updatedSlider: SliderDtoRequest): Slider {
         val slider = Slider(
             id = this.id,
@@ -76,6 +104,7 @@ class SliderService (
         slider.user = user
         return slider
     }
+
     private fun SliderDtoRequest.toModel(user: UserCMS): Slider {
         val slider = Slider(
             title = this.title,

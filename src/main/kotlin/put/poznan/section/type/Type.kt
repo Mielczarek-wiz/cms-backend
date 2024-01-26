@@ -43,5 +43,4 @@ data class Type (
         result = 31 * result + user.hashCode()
         return result
     }
-
 }

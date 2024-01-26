@@ -3,17 +3,17 @@ package put.poznan.section.infobox
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import put.poznan.files.FileService
 import put.poznan.section.infobox.dto.InfoboxDtoRequest
 import put.poznan.section.infobox.dto.InfoboxDtoResponse
 import put.poznan.user.UserCMS
 import put.poznan.user.UserCMSRepository
+import java.nio.file.Paths
+import kotlin.io.path.deleteIfExists
 
 @Service
 class InfoboxService (
     val infoboxRepository: InfoboxRepository,
     val userCMSRepository: UserCMSRepository,
-    val fileService: FileService
 ) {
     fun findAll(): List<InfoboxDtoResponse> {
         val allInfoboxes = infoboxRepository.findAll()
@@ -22,7 +22,7 @@ class InfoboxService (
     }
 
     fun create(newInfobox: InfoboxDtoRequest): ResponseEntity<Map<String, String>> {
-        val user = userCMSRepository.findUserCMSByEmail("basia@o2.pl")
+        val user = userCMSRepository.findUserCMSByEmail(newInfobox.user)
         return if (user != null) {
             infoboxRepository.save(newInfobox.toModel(user))
             val responseBody = mapOf("message" to "Infobox created")
@@ -35,7 +35,7 @@ class InfoboxService (
 
     fun modify(id: Long, updatedInfobox: InfoboxDtoRequest): ResponseEntity<Map<String, String>> {
         val infobox = infoboxRepository.findInfoboxById(id)
-        val user = userCMSRepository.findUserCMSByEmail("basia@o2.pl")
+        val user = infobox?.user
         return if(infobox != null && user != null){
             val infoboxCopied = infobox.copy()
             infoboxRepository.save(infoboxCopied.toUpdatedModel(user, updatedInfobox))
@@ -49,7 +49,7 @@ class InfoboxService (
 
     fun delete(id: Long): ResponseEntity<Map<String, String>> {
         val infobox = infoboxRepository.findInfoboxById(id)
-        return if (infobox != null){
+        return if (infobox != null && Paths.get("resources/files/infobox/" + infobox.imgref).deleteIfExists()) {
             infoboxRepository.delete(infobox)
             val responseBody = mapOf("message" to "Infobox deleted")
             ResponseEntity(responseBody, HttpStatus.OK)
@@ -93,5 +93,4 @@ class InfoboxService (
         infobox.user = user
         return infobox
     }
-
 }
