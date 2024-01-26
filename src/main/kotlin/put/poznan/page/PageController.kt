@@ -3,7 +3,6 @@ package put.poznan.page
 import lombok.RequiredArgsConstructor
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import put.poznan.general.dto.GeneralDtoRequest
 import put.poznan.page.dto.PageDtoRequest
 import put.poznan.page.dto.PageDtoResponse
 
@@ -15,6 +14,9 @@ class PageController (
 ) {
     @GetMapping("secured")
     fun getAll(): List<PageDtoResponse> = pageService.findAll()
+
+    @GetMapping("secured/parent-pages/{name}")
+    fun getAvailableParentPages(@PathVariable name: String): List<PageDtoResponse> = pageService.findAvailableParentPages(name)
 
     @PostMapping("secured")
     fun create(@RequestBody newPage: PageDtoRequest): ResponseEntity<Map<String, String>> = pageService.create(newPage)

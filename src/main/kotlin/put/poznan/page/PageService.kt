@@ -7,7 +7,6 @@ import put.poznan.page.dto.PageDtoRequest
 import put.poznan.page.dto.PageDtoResponse
 import put.poznan.section.Section
 import put.poznan.section.SectionRepository
-import put.poznan.section.infobox.Infobox
 import put.poznan.user.UserCMS
 import put.poznan.user.UserCMSRepository
 
@@ -19,6 +18,13 @@ class PageService(
 ) {
     fun findAll(): List<PageDtoResponse> {
         val allPages = pageRepository.findAll()
+        val responsePages = allPages.map { it.toResponse() }
+        return responsePages
+    }
+
+    fun findAvailableParentPages(name: String): List<PageDtoResponse> {
+        val allPages = pageRepository.findAll()
+        allPages.removeIf{ name == it.name || it.page?.page != null }
         val responsePages = allPages.map { it.toResponse() }
         return responsePages
     }
@@ -110,11 +116,6 @@ class PageService(
     }
 
     private fun String.toSections(): Section {
-        val section = sectionRepository.findSectionByTitle(this)
-        if (section != null) {
-            return section
-        } else {
-            return Section()
-        }
+        return sectionRepository.findSectionByTitle(this) ?: Section()
     }
 }

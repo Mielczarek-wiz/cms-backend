@@ -26,16 +26,13 @@ data class General(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-
         other as General
-
         if (id != other.id) return false
         if (key != other.key) return false
         if (value != other.value) return false
         if (description != other.description) return false
         if (hidden != other.hidden) return false
         if (user != other.user) return false
-
         return true
     }
 
@@ -48,5 +45,4 @@ data class General(
         result = 31 * result + user.hashCode()
         return result
     }
-
 }
