@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile
 import put.poznan.files.FileService
 import put.poznan.section.infobox.dto.InfoboxDtoRequest
 import put.poznan.section.infobox.dto.InfoboxDtoResponse
+import put.poznan.section.infobox.dto.InfoboxDtoResponseClient
 
 @RestController
 @RequiredArgsConstructor
@@ -18,6 +19,10 @@ class InfoboxController (
     val fileService: FileService,
     val mapper: ObjectMapper
 ) {
+    @GetMapping("exposed/socials/{partInformation}")
+    fun getSocials(@PathVariable partInformation: String): List<InfoboxDtoResponseClient> = infoboxService.getSocials(partInformation)
+    @GetMapping("exposed/{information}")
+    fun getInfobox(@PathVariable information: String): InfoboxDtoResponseClient = infoboxService.getInfobox(information)
     @GetMapping("secured")
     fun getAll(): List<InfoboxDtoResponse> = infoboxService.findAll()
 
@@ -27,7 +32,7 @@ class InfoboxController (
             val infobox = mapper.readValue(newInfobox, InfoboxDtoRequest::class.java)
             infoboxService.create(infobox)
         } else {
-            val errorMassage = mapOf("message" to "Only images can be uploaded")
+            val errorMassage = mapOf("message" to "Only images (non-svg) can be uploaded")
             ResponseEntity(errorMassage, HttpStatus.BAD_REQUEST)
         }
     }

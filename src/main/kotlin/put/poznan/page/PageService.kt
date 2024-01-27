@@ -1,9 +1,9 @@
 package put.poznan.page
 
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import put.poznan.files.FileService
 import put.poznan.page.dto.PageDtoRequest
 import put.poznan.page.dto.PageDtoResponse
 import put.poznan.page.dto.PageDtoResponseClientMenu
@@ -18,12 +18,12 @@ import put.poznan.user.UserCMSRepository
 
 @Service
 class PageService(
-        val pageRepository: PageRepository,
-        val userCMSRepository: UserCMSRepository,
-        val sectionRepository: SectionRepository
+    private val pageRepository: PageRepository,
+    private val userCMSRepository: UserCMSRepository,
+    private val sectionRepository: SectionRepository,
+    private val fileService: FileService
 ) {
 
-    private val logger = LoggerFactory.getLogger(PageService::class.java)
     fun getPage(link: String): PageDtoResponseClientPage {
         val page = pageRepository.findPageByLink(link)
         return page!!.toResponseClientPage()
@@ -163,21 +163,26 @@ class PageService(
     }
 
     private fun Section.toResponseSectionClient(): SectionDtoResponseClient {
+        var image = ""
+        if (this.imgref != "") {
+            image = fileService.download("resources/files/section/" + this.imgref)
+        }
         return SectionDtoResponseClient(
                 id = this.id,
                 title = this.title,
                 subtitle = this.subtitle,
                 text = this.text,
-                imgref = this.imgref,
+                image = image,
                 hidden = this.hidden,
                 infoboxes = this.infoboxes.map { it.toResponseInfoboxClient() },
                 type = this.type.type
         )
     }
     private fun Infobox.toResponseInfoboxClient(): InfoboxDtoResponseClient {
+        val image = fileService.download("resources/files/infobox/" + this.imgref)
         return InfoboxDtoResponseClient(
                 id = this.id,
-                imgref = this.imgref,
+                image = image,
                 information = this.information,
                 subinformation = this.subinformation,
                 hidden = this.hidden,

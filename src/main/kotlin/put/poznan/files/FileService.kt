@@ -21,6 +21,9 @@ class FileService {
         val folderPath = Paths.get(path)
         Files.createDirectories(folderPath)
         if (file.originalFilename != null && file.contentType?.contains("image")!!) {
+            if( file.contentType?.contains("image/svg")!!){
+                return false
+            }
             val uploadedTargetFilePath = folderPath.resolve(file.originalFilename!!)
             if (!uploadedTargetFilePath.exists()) {
                 val destinationFile = File.createTempFile("temp-", file.originalFilename!!)

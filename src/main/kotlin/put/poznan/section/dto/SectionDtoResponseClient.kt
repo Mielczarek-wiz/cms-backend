@@ -7,7 +7,7 @@ data class SectionDtoResponseClient(
     val title: String,
     val subtitle: String,
     val text: String,
-    val imgref: String,
+    val image: String,
     val type: String,
     val infoboxes: List<InfoboxDtoResponseClient>,
     val hidden: Boolean

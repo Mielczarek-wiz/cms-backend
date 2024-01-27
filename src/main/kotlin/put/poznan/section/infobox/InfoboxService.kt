@@ -3,8 +3,10 @@ package put.poznan.section.infobox
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import put.poznan.files.FileService
 import put.poznan.section.infobox.dto.InfoboxDtoRequest
 import put.poznan.section.infobox.dto.InfoboxDtoResponse
+import put.poznan.section.infobox.dto.InfoboxDtoResponseClient
 import put.poznan.user.UserCMS
 import put.poznan.user.UserCMSRepository
 import java.nio.file.Paths
@@ -12,9 +14,20 @@ import kotlin.io.path.deleteIfExists
 
 @Service
 class InfoboxService (
-    val infoboxRepository: InfoboxRepository,
-    val userCMSRepository: UserCMSRepository,
+    private val infoboxRepository: InfoboxRepository,
+    private val userCMSRepository: UserCMSRepository,
+    private val fileService: FileService
 ) {
+
+    fun getSocials(partInformation: String): List<InfoboxDtoResponseClient> {
+        val allInfoboxes = infoboxRepository.findInfoboxesByInformationStartingWith(partInformation)
+        val responseInfoboxes = allInfoboxes.map { it.toResponseInfoboxClient() }
+        return responseInfoboxes
+    }
+    fun getInfobox(information: String): InfoboxDtoResponseClient {
+        val infobox = infoboxRepository.findInfoboxByInformation(information)
+        return infobox!!.toResponseInfoboxClient()
+    }
     fun findAll(): List<InfoboxDtoResponse> {
         val allInfoboxes = infoboxRepository.findAll()
         val responseInfoboxes = allInfoboxes.map { it.toResponse() }
@@ -70,7 +83,16 @@ class InfoboxService (
             hidden = this.hidden,
         )
     }
-
+    private fun Infobox.toResponseInfoboxClient(): InfoboxDtoResponseClient {
+        val image = fileService.download("resources/files/infobox/" + this.imgref)
+        return InfoboxDtoResponseClient(
+            id = this.id,
+            image = image,
+            information = this.information,
+            subinformation = this.subinformation,
+            hidden = this.hidden
+        )
+    }
     private fun Infobox.toUpdatedModel(user: UserCMS, updatedInfobox: InfoboxDtoRequest): Infobox {
         val infobox = Infobox(
             id = this.id,
@@ -93,4 +115,7 @@ class InfoboxService (
         infobox.user = user
         return infobox
     }
+
+
+
 }

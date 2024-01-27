@@ -22,7 +22,6 @@ class SectionService (
     private val pageRepository: PageRepository,
     private val typeRepository: TypeRepository
 ) {
-    private val logger = org.slf4j.LoggerFactory.getLogger(SectionService::class.java)
     fun findAll(): List<SectionDtoResponse> {
         val allSections = sectionRepository.findAll()
         val responseSections = allSections.map { it.toResponse() }
@@ -56,7 +55,7 @@ class SectionService (
     fun delete(id: Long): ResponseEntity<Map<String, String>> {
         val section = sectionRepository.findSectionById(id)
         return if (section != null ) {
-            Paths.get("resources/files/section/" + section.imgref).deleteIfExists()
+
             preDelete(section)
             sectionRepository.delete(section)
             val responseBody = mapOf("message" to "Section deleted")
@@ -117,6 +116,9 @@ class SectionService (
     }
 
     private fun preDelete(section: Section): Void? {
+        if(section.imgref != ""){
+            Paths.get("resources/files/section/" + section.imgref).deleteIfExists()
+        }
         val pages = pageRepository.findPagesBySectionsContaining(section)
         pages.forEach { page ->
             val sections = page.sections.toMutableList()
