@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import put.poznan.general.dto.GeneralDtoRequest
 import put.poznan.general.dto.GeneralDtoResponse
+import put.poznan.general.dto.GeneralDtoResponseClient
 
 @RestController
 @RequiredArgsConstructor
@@ -12,6 +13,8 @@ import put.poznan.general.dto.GeneralDtoResponse
 class GeneralController(
     val generalService: GeneralService
 ) {
+    @GetMapping("exposed/{partKey}")
+    fun getKeys(@PathVariable partKey: String): List<GeneralDtoResponseClient> = generalService.getKeys(partKey)
     @GetMapping("secured")
     fun getAll(): List<GeneralDtoResponse> = generalService.findAll()
 

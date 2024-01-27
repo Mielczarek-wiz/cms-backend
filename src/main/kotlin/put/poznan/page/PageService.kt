@@ -3,19 +3,37 @@ package put.poznan.page
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import put.poznan.files.FileService
 import put.poznan.page.dto.PageDtoRequest
 import put.poznan.page.dto.PageDtoResponse
+import put.poznan.page.dto.PageDtoResponseClientMenu
+import put.poznan.page.dto.PageDtoResponseClientPage
 import put.poznan.section.Section
 import put.poznan.section.SectionRepository
+import put.poznan.section.dto.SectionDtoResponseClient
+import put.poznan.section.infobox.Infobox
+import put.poznan.section.infobox.dto.InfoboxDtoResponseClient
 import put.poznan.user.UserCMS
 import put.poznan.user.UserCMSRepository
 
 @Service
 class PageService(
-        val pageRepository: PageRepository,
-        val userCMSRepository: UserCMSRepository,
-        val sectionRepository: SectionRepository
+    private val pageRepository: PageRepository,
+    private val userCMSRepository: UserCMSRepository,
+    private val sectionRepository: SectionRepository,
+    private val fileService: FileService
 ) {
+
+    fun getPage(link: String): PageDtoResponseClientPage {
+        val page = pageRepository.findPageByLink(link)
+        return page!!.toResponseClientPage()
+    }
+    fun getMenu(): List<PageDtoResponseClientMenu> {
+        val allPages = pageRepository.findPagesByPageIsNull()
+        val responsePages = allPages.map { it.toResponseClientMenu() }
+        return responsePages
+
+    }
     fun findAll(): List<PageDtoResponse> {
         val allPages = pageRepository.findAll()
         val responsePages = allPages.map { it.toResponse() }
@@ -116,6 +134,61 @@ class PageService(
     }
 
     private fun String.toSections(): Section {
-        return sectionRepository.findSectionByTitle(this) ?: Section()
+        val section = sectionRepository.findSectionByTitle(this)
+        if (section != null) {
+            return section
+        } else {
+            return Section()
+        }
     }
+
+
+    private fun Page.toResponseClientMenu(): PageDtoResponseClientMenu {
+        val subpages = pageRepository.findPagesByPageId(this.id)
+        return PageDtoResponseClientMenu(
+                id = this.id,
+                name = this.name,
+                link = this.link,
+                hidden = this.hidden,
+                subpages = subpages.map { it.toResponseClientMenu() }
+        )
+    }
+
+    private fun Page.toResponseClientPage(): PageDtoResponseClientPage {
+        return PageDtoResponseClientPage(
+                id = this.id,
+                name = this.name,
+                sections = this.sections.map { it.toResponseSectionClient() }
+        )
+    }
+
+    private fun Section.toResponseSectionClient(): SectionDtoResponseClient {
+        var image = ""
+        if (this.imgref != "") {
+            image = fileService.download("resources/files/section/" + this.imgref)
+        }
+        return SectionDtoResponseClient(
+                id = this.id,
+                title = this.title,
+                subtitle = this.subtitle,
+                text = this.text,
+                image = image,
+                hidden = this.hidden,
+                infoboxes = this.infoboxes.map { it.toResponseInfoboxClient() },
+                type = this.type.type
+        )
+    }
+    private fun Infobox.toResponseInfoboxClient(): InfoboxDtoResponseClient {
+        val image = fileService.download("resources/files/infobox/" + this.imgref)
+        return InfoboxDtoResponseClient(
+                id = this.id,
+                image = image,
+                information = this.information,
+                subinformation = this.subinformation,
+                hidden = this.hidden,
+
+        )
+    }
+
+
 }

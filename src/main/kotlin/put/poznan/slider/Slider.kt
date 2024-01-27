@@ -18,6 +18,8 @@ data class Slider(
     @NotNull
     val title: String = "",
     @NotNull
+    val subtitle: String = "",
+    @NotNull
     val text: String = "",
     @NotNull
     val imgref: String = "",

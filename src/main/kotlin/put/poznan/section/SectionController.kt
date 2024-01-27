@@ -22,25 +22,39 @@ class SectionController (
     fun getAll(): List<SectionDtoResponse> = sectionService.findAll()
 
     @PostMapping("secured")
-    fun create(@RequestParam("image") file: MultipartFile, @RequestParam("section") newSection: String): ResponseEntity<Map<String, String>> {
-        return if (fileService.upload(file, "resources/files/section")) {
+    fun create(@RequestParam(required = false, name = "image") file: MultipartFile?, @RequestParam("section") newSection: String): ResponseEntity<Map<String, String>> {
+        return if(file != null){
+             if (fileService.upload(file, "resources/files/section")) {
+                val section = mapper.readValue(newSection, SectionDtoRequest::class.java)
+                sectionService.create(section)
+            } else {
+                val errorMassage = mapOf("message" to "Only images (non-svg)  can be uploaded")
+                ResponseEntity(errorMassage, HttpStatus.BAD_REQUEST)
+            }
+        } else {
             val section = mapper.readValue(newSection, SectionDtoRequest::class.java)
             sectionService.create(section)
-        } else {
-            val errorMassage = mapOf("message" to "Only images can be uploaded")
-            ResponseEntity(errorMassage, HttpStatus.BAD_REQUEST)
         }
+
     }
 
     @PutMapping("secured/{id}")
-    fun modify(@PathVariable id: Long, @RequestParam("image") file: MultipartFile, @RequestParam("section") newSection: String): ResponseEntity<Map<String, String>> {
-        return if (fileService.upload(file, "resources/files/section")) {
+    fun modify(@PathVariable id: Long, @RequestParam(required = false, name = "image") file: MultipartFile?, @RequestParam("section") newSection: String): ResponseEntity<Map<String, String>> {
+        return if(file != null) {
+            if (fileService.upload(file, "resources/files/section")) {
+                val section = mapper.readValue(newSection, SectionDtoRequest::class.java)
+                sectionService.modify(id, section)
+            } else {
+                val errorMassage = mapOf("message" to "Only images can be uploaded")
+                ResponseEntity(errorMassage, HttpStatus.BAD_REQUEST)
+            }
+        }
+        else {
             val section = mapper.readValue(newSection, SectionDtoRequest::class.java)
             sectionService.modify(id, section)
-        } else {
-            val errorMassage = mapOf("message" to "Only images can be uploaded")
-            ResponseEntity(errorMassage, HttpStatus.BAD_REQUEST)
         }
+
+
     }
 
     @DeleteMapping("secured/{id}")

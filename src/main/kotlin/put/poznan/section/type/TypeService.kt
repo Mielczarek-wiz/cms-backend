@@ -3,6 +3,7 @@ package put.poznan.section.type
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import put.poznan.section.SectionRepository
 import put.poznan.section.type.dto.TypeDtoRequest
 import put.poznan.section.type.dto.TypeDtoResponse
 import put.poznan.user.UserCMS
@@ -10,8 +11,9 @@ import put.poznan.user.UserCMSRepository
 
 @Service
 class TypeService (
-    val typeRepository: TypeRepository,
-    val userCMSRepository: UserCMSRepository
+    private val typeRepository: TypeRepository,
+    private val sectionRepository: SectionRepository,
+    private val userCMSRepository: UserCMSRepository
 ) {
     fun findAll(): List<TypeDtoResponse> {
         val allTypes = typeRepository.findAll()
@@ -48,9 +50,16 @@ class TypeService (
     fun delete(id: Long): ResponseEntity<Map<String, String>> {
         val type = typeRepository.findTypeById(id)
         return if (type != null){
-            typeRepository.delete(type)
-            val responseBody = mapOf("message" to "Type deleted")
-            ResponseEntity(responseBody, HttpStatus.OK)
+            if(sectionRepository.existsByType(type)){
+                val errorMessage = mapOf("message" to "Cannot delete type with id: $id, because it is used in section")
+                return ResponseEntity(errorMessage, HttpStatus.BAD_REQUEST)
+            }
+            else{
+                typeRepository.delete(type)
+                val responseBody = mapOf("message" to "Type deleted")
+                ResponseEntity(responseBody, HttpStatus.OK)
+            }
+
         } else {
             val errorMessage = mapOf("message" to "Cannot delete type with id: $id")
             ResponseEntity(errorMessage, HttpStatus.BAD_REQUEST)

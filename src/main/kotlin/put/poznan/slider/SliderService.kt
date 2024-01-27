@@ -5,8 +5,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import put.poznan.files.FileService
 import put.poznan.slider.dto.SliderDtoRequest
-import put.poznan.slider.dto.SliderDtoResponseClient
 import put.poznan.slider.dto.SliderDtoResponse
+import put.poznan.slider.dto.SliderDtoResponseClient
 import put.poznan.user.UserCMS
 import put.poznan.user.UserCMSRepository
 import java.nio.file.Paths
@@ -14,9 +14,9 @@ import kotlin.io.path.deleteIfExists
 
 @Service
 class SliderService (
-    val sliderRepository: SliderRepository,
-    val userCMSRepository: UserCMSRepository,
-    val fileService: FileService
+    private val sliderRepository: SliderRepository,
+    private val userCMSRepository: UserCMSRepository,
+    private val fileService: FileService
 ) {
     fun findAllClient(): List<SliderDtoResponseClient> {
         val allSliders = sliderRepository.findAll()
@@ -75,6 +75,7 @@ class SliderService (
         return SliderDtoResponse(
             id= this.id,
             title = this.title,
+            subtitle = this.subtitle,
             text = this.text,
             imgref = this.imgref,
             hidden = this.hidden,
@@ -87,6 +88,7 @@ class SliderService (
         return SliderDtoResponseClient(
             id= this.id,
             title = this.title,
+            subtitle = this.subtitle,
             text = this.text,
             image = image,
             hidden = this.hidden,
@@ -97,6 +99,7 @@ class SliderService (
         val slider = Slider(
             id = this.id,
             title = updatedSlider.title,
+            subtitle = updatedSlider.subtitle,
             text = updatedSlider.text,
             imgref = updatedSlider.photo,
             hidden = updatedSlider.hidden,
@@ -108,6 +111,7 @@ class SliderService (
     private fun SliderDtoRequest.toModel(user: UserCMS): Slider {
         val slider = Slider(
             title = this.title,
+            subtitle = this.subtitle,
             text = this.text,
             imgref = this.photo,
             hidden = this.hidden,

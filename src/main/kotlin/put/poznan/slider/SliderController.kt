@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import put.poznan.files.FileService
 import put.poznan.slider.dto.SliderDtoRequest
-import put.poznan.slider.dto.SliderDtoResponseClient
 import put.poznan.slider.dto.SliderDtoResponse
+import put.poznan.slider.dto.SliderDtoResponseClient
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ class SliderController (
             val slider = mapper.readValue(newSlider, SliderDtoRequest::class.java)
             return sliderService.create(slider)
         } else {
-            val errorMassage = mapOf("message" to "Only images can be uploaded")
+            val errorMassage = mapOf("message" to "Only images (non-svg) can be uploaded")
             return ResponseEntity(errorMassage, HttpStatus.BAD_REQUEST)
         }
     }

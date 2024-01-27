@@ -5,14 +5,20 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import put.poznan.general.dto.GeneralDtoRequest
 import put.poznan.general.dto.GeneralDtoResponse
+import put.poznan.general.dto.GeneralDtoResponseClient
 import put.poznan.user.UserCMS
 import put.poznan.user.UserCMSRepository
 
 @Service
 class GeneralService(
-    val generalRepository: GeneralRepository,
-    val userCMSRepository: UserCMSRepository
+    private val generalRepository: GeneralRepository,
+    private val userCMSRepository: UserCMSRepository
 ) {
+    fun getKeys(partKey: String): List<GeneralDtoResponseClient> {
+        val allGenerals = generalRepository.findGeneralByKeyContaining(partKey)
+        val responseGenerals = allGenerals.map { it.toResponseClient() }
+        return responseGenerals
+    }
     fun findAll(): List<GeneralDtoResponse> {
         val allGenerals = generalRepository.findAll()
         val responseGenerals = allGenerals.map { it.toResponse() }
@@ -65,6 +71,13 @@ class GeneralService(
             user = user
         )
     }
+    private fun General.toResponseClient(): GeneralDtoResponseClient {
+        return GeneralDtoResponseClient(
+            id= this.id,
+            key=this.key,
+            value=this.value,
+        )
+    }
     private fun General.toUpdatedModel(user: UserCMS, updatedGeneral: GeneralDtoRequest): General {
         val general = General(
             id = this.id,
@@ -86,5 +99,7 @@ class GeneralService(
         general.user = user
         return general
     }
+
+
 
 }

@@ -17,8 +17,10 @@ data class Page (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L,
     @NotNull
+    @Column(unique = true)
     val name: String = "",
     @NotNull
+    @Column(unique = true)
     val link: String = "",
     val hidden: Boolean = true
 ) {
@@ -59,4 +61,5 @@ data class Page (
         result = 31 * result + sections.hashCode()
         return result
     }
+
 }
