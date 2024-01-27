@@ -3,6 +3,7 @@ package put.poznan.section
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import put.poznan.page.PageRepository
 import put.poznan.section.dto.SectionDtoRequest
 import put.poznan.section.dto.SectionDtoResponse
 import put.poznan.section.infobox.Infobox
@@ -15,11 +16,13 @@ import kotlin.io.path.deleteIfExists
 
 @Service
 class SectionService (
-    val sectionRepository: SectionRepository,
-    val userCMSRepository: UserCMSRepository,
-    val infoboxRepository: InfoboxRepository,
-    val typeRepository: TypeRepository
+    private val sectionRepository: SectionRepository,
+    private val userCMSRepository: UserCMSRepository,
+    private val infoboxRepository: InfoboxRepository,
+    private val pageRepository: PageRepository,
+    private val typeRepository: TypeRepository
 ) {
+    private val logger = org.slf4j.LoggerFactory.getLogger(SectionService::class.java)
     fun findAll(): List<SectionDtoResponse> {
         val allSections = sectionRepository.findAll()
         val responseSections = allSections.map { it.toResponse() }
@@ -52,7 +55,9 @@ class SectionService (
     }
     fun delete(id: Long): ResponseEntity<Map<String, String>> {
         val section = sectionRepository.findSectionById(id)
-        return if (section != null && Paths.get("resources/files/infobox/" + section.imgref).deleteIfExists()) {
+        return if (section != null ) {
+            Paths.get("resources/files/section/" + section.imgref).deleteIfExists()
+            preDelete(section)
             sectionRepository.delete(section)
             val responseBody = mapOf("message" to "Section deleted")
             ResponseEntity(responseBody, HttpStatus.OK)
@@ -109,5 +114,16 @@ class SectionService (
     private fun String.toInfoboxes(): Infobox {
         val infobox = infoboxRepository.findInfoboxByInformation(this)
         return infobox ?: Infobox()
+    }
+
+    private fun preDelete(section: Section): Void? {
+        val pages = pageRepository.findPagesBySectionsContaining(section)
+        pages.forEach { page ->
+            val sections = page.sections.toMutableList()
+            sections.remove(section)
+            page.sections = sections
+            pageRepository.save(page)
+        }
+        return null
     }
 }

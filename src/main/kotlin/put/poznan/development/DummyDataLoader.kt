@@ -25,12 +25,14 @@ class DummyDataLoader(
         try {
             val mod = Role(name = "Moderator")
             val adm = Role(name = "Admin")
-            roleRepository.save(mod)
-            roleRepository.save(adm)
             val basia = UserCMS(name = "Pani", surname = "Basia", email = "basia@o2.pl", password = encoder.encode("pass1"))
-            basia.role = mod
             val wojtek = UserCMS(name = "Pan", surname = "Wojtek", email = "wojtek@o2.pl", password = encoder.encode("pass2"))
-            wojtek.role = adm
+            if (!roleRepository.existsRoleByName(mod.name) || !roleRepository.existsRoleByName(adm.name) ){
+                roleRepository.save(mod)
+                roleRepository.save(adm)
+                basia.role = mod
+                wojtek.role = adm
+            }
 
             val wojtekIn = userCMSRepository.findUserCMSByEmail(wojtek.email)
             val basiaIn = userCMSRepository.findUserCMSByEmail(basia.email)
@@ -52,16 +54,16 @@ class DummyDataLoader(
                 val type9 = Type(type = "WhoWeAre", hidden = false)
                 val type10 = Type(type = "WhyUs", hidden = false)
 
-                type1.user = wojtekIn
-                type2.user = wojtekIn
-                type3.user = wojtekIn
-                type4.user = wojtekIn
-                type5.user = wojtekIn
-                type6.user = wojtekIn
-                type7.user = wojtekIn
-                type8.user = wojtekIn
-                type9.user = wojtekIn
-                type10.user = wojtekIn
+                type1.user = wojtek
+                type2.user = wojtek
+                type3.user = wojtek
+                type4.user = wojtek
+                type5.user = wojtek
+                type6.user = wojtek
+                type7.user = wojtek
+                type8.user = wojtek
+                type9.user = wojtek
+                type10.user = wojtek
                 typeRepository.saveAll(listOf(type1, type2, type3, type4, type5, type6, type7, type8, type9, type10))
             }
 
