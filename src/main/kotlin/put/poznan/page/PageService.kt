@@ -88,14 +88,13 @@ class PageService(
 
     private fun Page.toResponse(): PageDtoResponse {
         val user = this.user?.name + " " + this.user?.surname
-        val parentPage = ""
         return PageDtoResponse(
                 id = this.id,
                 name = this.name,
                 link = this.link,
                 hidden = this.hidden,
                 user = user,
-                parentPage = parentPage,
+                parentPage = this.page?.name ?: "",
                 sections = this.sections.map { it.title }
         )
     }
@@ -107,12 +106,7 @@ class PageService(
                 hidden = updatedPage.hidden
         )
         page.user = user
-        if(updatedPage.parentPage == null || updatedPage.parentPage == ""){
-            page.page = null
-        }
-        else {
-            page.page = pageRepository.findPageByName(updatedPage.parentPage)
-        }
+        page.page = setParentPage(updatedPage.parentPage)
         page.sections = updatedPage.sections.map { it.toSections() }
         return page
     }
@@ -123,12 +117,7 @@ class PageService(
                 hidden = this.hidden
         )
         page.user = user
-        if(this.parentPage == null || this.parentPage == ""){
-            page.page = null
-        }
-        else {
-            page.page = pageRepository.findPageByName(this.parentPage)
-        }
+        page.page = setParentPage(this.parentPage)
         page.sections = this.sections.map { it.toSections() }
         return page
     }
@@ -188,6 +177,14 @@ class PageService(
                 hidden = this.hidden,
 
         )
+    }
+    private fun setParentPage(page: String?): Page? {
+        if(page == null || page == ""){
+            return null
+        }
+        else {
+            return pageRepository.findPageByName(page)
+        }
     }
 
 
