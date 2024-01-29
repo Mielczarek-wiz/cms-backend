@@ -26,7 +26,8 @@ class PageService(
 
     fun getPage(link: String): PageDtoResponseClientPage {
         val page = pageRepository.findPageByLinkAndHiddenIsFalse(link)
-        return page!!.toResponseClientPage()
+        return page?.toResponseClientPage() ?: PageDtoResponseClientPage()
+
     }
     fun getMenu(): List<PageDtoResponseClientMenu> {
         val allPages = pageRepository.findPagesByPageIsNullAndHiddenIsFalse()
@@ -144,10 +145,13 @@ class PageService(
     }
 
     private fun Page.toResponseClientPage(): PageDtoResponseClientPage {
+        val sections = this.sections.toMutableList()
+        sections.removeIf { it.hidden}
+
         return PageDtoResponseClientPage(
                 id = this.id,
                 name = this.name,
-                sections = this.sections.map { it.toResponseSectionClient() }
+                sections = sections.map { it.toResponseSectionClient() }
         )
     }
 
@@ -156,6 +160,9 @@ class PageService(
         if (this.imgref != "") {
             image = fileService.download("resources/files/section/" + this.imgref)
         }
+        val infoboxes = this.infoboxes.toMutableList()
+        infoboxes.removeIf { it.hidden }
+
         return SectionDtoResponseClient(
                 id = this.id,
                 title = this.title,
@@ -163,7 +170,7 @@ class PageService(
                 text = this.text,
                 image = image,
                 hidden = this.hidden,
-                infoboxes = this.infoboxes.map { it.toResponseInfoboxClient() },
+                infoboxes = infoboxes.map { it.toResponseInfoboxClient() },
                 type = this.type.type
         )
     }
