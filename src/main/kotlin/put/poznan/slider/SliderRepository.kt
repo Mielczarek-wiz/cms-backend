@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 interface SliderRepository: JpaRepository<Slider, Long> {
     fun findSliderById(id: Long): Slider?
     fun findSliderByTitle(title: String): Slider?
+    fun findSlidersByHiddenIsFalse(): List<Slider>
 }

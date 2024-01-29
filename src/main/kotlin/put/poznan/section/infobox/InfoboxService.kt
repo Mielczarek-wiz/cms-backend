@@ -20,12 +20,12 @@ class InfoboxService (
 ) {
 
     fun getSocials(partInformation: String): List<InfoboxDtoResponseClient> {
-        val allInfoboxes = infoboxRepository.findInfoboxesByInformationStartingWith(partInformation)
+        val allInfoboxes = infoboxRepository.findInfoboxesByInformationStartingWithAndHiddenIsFalse(partInformation)
         val responseInfoboxes = allInfoboxes.map { it.toResponseInfoboxClient() }
         return responseInfoboxes
     }
     fun getInfobox(information: String): InfoboxDtoResponseClient {
-        val infobox = infoboxRepository.findInfoboxByInformation(information)
+        val infobox = infoboxRepository.findInfoboxByInformationAndHiddenIsFalse(information)
         return infobox!!.toResponseInfoboxClient()
     }
     fun findAll(): List<InfoboxDtoResponse> {

@@ -19,7 +19,7 @@ class SliderService (
     private val fileService: FileService
 ) {
     fun findAllClient(): List<SliderDtoResponseClient> {
-        val allSliders = sliderRepository.findAll()
+        val allSliders = sliderRepository.findSlidersByHiddenIsFalse()
         val responseSliders = allSliders.map { it.toResponseClient() }
         return responseSliders
     }

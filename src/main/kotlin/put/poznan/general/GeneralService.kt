@@ -15,7 +15,7 @@ class GeneralService(
     private val userCMSRepository: UserCMSRepository
 ) {
     fun getKeys(partKey: String): List<GeneralDtoResponseClient> {
-        val allGenerals = generalRepository.findGeneralByKeyContaining(partKey)
+        val allGenerals = generalRepository.findGeneralByKeyContainingAndHiddenIsFalse(partKey)
         val responseGenerals = allGenerals.map { it.toResponseClient() }
         return responseGenerals
     }

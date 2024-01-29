@@ -25,11 +25,11 @@ class PageService(
 ) {
 
     fun getPage(link: String): PageDtoResponseClientPage {
-        val page = pageRepository.findPageByLink(link)
+        val page = pageRepository.findPageByLinkAndHiddenIsFalse(link)
         return page!!.toResponseClientPage()
     }
     fun getMenu(): List<PageDtoResponseClientMenu> {
-        val allPages = pageRepository.findPagesByPageIsNull()
+        val allPages = pageRepository.findPagesByPageIsNullAndHiddenIsFalse()
         val responsePages = allPages.map { it.toResponseClientMenu() }
         return responsePages
 
@@ -41,7 +41,7 @@ class PageService(
     }
 
     fun findAvailableParentPages(name: String): List<PageDtoResponse> {
-        val allPages = pageRepository.findAll()
+        val allPages = pageRepository.findPagesByHiddenIsFalse().toMutableList()
         allPages.removeIf{ name == it.name || it.page?.page != null }
         val responsePages = allPages.map { it.toResponse() }
         return responsePages
@@ -133,7 +133,7 @@ class PageService(
 
 
     private fun Page.toResponseClientMenu(): PageDtoResponseClientMenu {
-        val subpages = pageRepository.findPagesByPageId(this.id)
+        val subpages = pageRepository.findPagesByPageIdAndHiddenIsFalse(this.id)
         return PageDtoResponseClientMenu(
                 id = this.id,
                 name = this.name,

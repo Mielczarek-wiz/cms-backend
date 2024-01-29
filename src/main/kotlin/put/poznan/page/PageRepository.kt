@@ -8,10 +8,11 @@ import put.poznan.section.Section
 @EnableJpaRepositories
 @Repository
 interface PageRepository: JpaRepository<Page, Long> {
+    fun findPagesByHiddenIsFalse(): List<Page>
     fun findPageById(id: Long): Page?
     fun findPageByName(name: String): Page?
-    fun findPageByLink(link: String): Page?
+    fun findPageByLinkAndHiddenIsFalse(link: String): Page?
     fun findPagesBySectionsContaining(section: Section): List<Page>
-    fun findPagesByPageIsNull(): List<Page>
-    fun findPagesByPageId(id: Long): List<Page>
+    fun findPagesByPageIsNullAndHiddenIsFalse(): List<Page>
+    fun findPagesByPageIdAndHiddenIsFalse(id: Long): List<Page>
 }
