@@ -111,7 +111,7 @@ class SectionService (
     }
 
     private fun String.toInfoboxes(): Infobox {
-        val infobox = infoboxRepository.findInfoboxByInformation(this)
+        val infobox = infoboxRepository.findInfoboxByInformationAndHiddenIsFalse(this)
         return infobox ?: Infobox()
     }
 

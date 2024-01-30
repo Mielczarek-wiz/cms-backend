@@ -24,11 +24,13 @@ class SecurityConfiguration(
                 it
                     .requestMatchers("/auth", "/auth/refresh", "/error")
                     .permitAll()
-                    .requestMatchers("/general/exposed/**", "/page/exposed/**", "/section/exposed/**", "/slider/exposed/**", "/section/type/exposed/**", "/section/infobox/exposed/**")
+                    .requestMatchers("/general/exposed/**", "/page/exposed/**", "/section/exposed/**",
+                        "/slider/exposed/**", "/section/type/exposed/**", "/section/infobox/exposed/**")
                     .permitAll()
                     .requestMatchers("/user/**")
                     .hasRole("Admin")
-                    .requestMatchers("/general/secured/**", "/page/secured/**", "/section/secured/**", "/slider/secured/**", "/section/type/secured/**", "/section/infobox/secured/**")
+                    .requestMatchers("/general/secured/**", "/page/secured/**", "/section/secured/**", "/slider/secured/**",
+                        "/section/type/secured/**", "/section/infobox/secured/**")
                     .hasAnyRole("Moderator", "Admin")
                     .anyRequest()
                     .fullyAuthenticated()

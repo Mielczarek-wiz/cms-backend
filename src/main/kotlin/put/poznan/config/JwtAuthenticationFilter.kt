@@ -3,9 +3,6 @@ package put.poznan.config
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.slf4j.LoggerFactory
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
@@ -33,17 +30,24 @@ class JwtAuthenticationFilter(
         }
 
         val jwtToken = authHeader!!.extractTokenValue()
-        if (tokenService.isExpired(jwtToken) && request.method != "GET") {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Unauthorized")
-        } else {
-            val email = tokenService.extractEmail(jwtToken)
-            if(email != null && SecurityContextHolder.getContext().authentication == null) {
-                val foundUser = userDetailsService.loadUserByUsername(email)
-                if(tokenService.isValid(jwtToken, foundUser)){
-                    updateContext(foundUser, request)
+
+        try {
+            if (tokenService.isExpired(jwtToken)) {
+                throw RuntimeException("JWT token has expired")
+            } else {
+                val email = tokenService.extractEmail(jwtToken)
+                if (email != null && SecurityContextHolder.getContext().authentication == null) {
+                    val foundUser = userDetailsService.loadUserByUsername(email)
+                    if (tokenService.isValid(jwtToken, foundUser)) {
+                        updateContext(foundUser, request)
+                    }
                 }
             }
+        } catch (e: RuntimeException) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Unauthorized")
+            return
         }
+
         filterChain.doFilter(request, response)
     }
     private fun updateContext(foundUser: UserDetails, request: HttpServletRequest) {

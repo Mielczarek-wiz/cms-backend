@@ -25,11 +25,12 @@ class PageService(
 ) {
 
     fun getPage(link: String): PageDtoResponseClientPage {
-        val page = pageRepository.findPageByLink(link)
-        return page!!.toResponseClientPage()
+        val page = pageRepository.findPageByLinkAndHiddenIsFalse(link)
+        return page?.toResponseClientPage() ?: PageDtoResponseClientPage()
+
     }
     fun getMenu(): List<PageDtoResponseClientMenu> {
-        val allPages = pageRepository.findPagesByPageIsNull()
+        val allPages = pageRepository.findPagesByPageIsNullAndHiddenIsFalse()
         val responsePages = allPages.map { it.toResponseClientMenu() }
         return responsePages
 
@@ -41,7 +42,7 @@ class PageService(
     }
 
     fun findAvailableParentPages(name: String): List<PageDtoResponse> {
-        val allPages = pageRepository.findAll()
+        val allPages = pageRepository.findPagesByHiddenIsFalse().toMutableList()
         allPages.removeIf{ name == it.name || it.page?.page != null }
         val responsePages = allPages.map { it.toResponse() }
         return responsePages
@@ -88,14 +89,13 @@ class PageService(
 
     private fun Page.toResponse(): PageDtoResponse {
         val user = this.user?.name + " " + this.user?.surname
-        val parentPage = ""
         return PageDtoResponse(
                 id = this.id,
                 name = this.name,
                 link = this.link,
                 hidden = this.hidden,
                 user = user,
-                parentPage = parentPage,
+                parentPage = this.page?.name ?: "",
                 sections = this.sections.map { it.title }
         )
     }
@@ -107,12 +107,7 @@ class PageService(
                 hidden = updatedPage.hidden
         )
         page.user = user
-        if(updatedPage.parentPage == null || updatedPage.parentPage == ""){
-            page.page = null
-        }
-        else {
-            page.page = pageRepository.findPageByName(updatedPage.parentPage)
-        }
+        page.page = setParentPage(updatedPage.parentPage)
         page.sections = updatedPage.sections.map { it.toSections() }
         return page
     }
@@ -123,12 +118,7 @@ class PageService(
                 hidden = this.hidden
         )
         page.user = user
-        if(this.parentPage == null || this.parentPage == ""){
-            page.page = null
-        }
-        else {
-            page.page = pageRepository.findPageByName(this.parentPage)
-        }
+        page.page = setParentPage(this.parentPage)
         page.sections = this.sections.map { it.toSections() }
         return page
     }
@@ -144,7 +134,7 @@ class PageService(
 
 
     private fun Page.toResponseClientMenu(): PageDtoResponseClientMenu {
-        val subpages = pageRepository.findPagesByPageId(this.id)
+        val subpages = pageRepository.findPagesByPageIdAndHiddenIsFalse(this.id)
         return PageDtoResponseClientMenu(
                 id = this.id,
                 name = this.name,
@@ -155,10 +145,13 @@ class PageService(
     }
 
     private fun Page.toResponseClientPage(): PageDtoResponseClientPage {
+        val sections = this.sections.toMutableList()
+        sections.removeIf { it.hidden}
+
         return PageDtoResponseClientPage(
                 id = this.id,
                 name = this.name,
-                sections = this.sections.map { it.toResponseSectionClient() }
+                sections = sections.map { it.toResponseSectionClient() }
         )
     }
 
@@ -167,6 +160,9 @@ class PageService(
         if (this.imgref != "") {
             image = fileService.download("resources/files/section/" + this.imgref)
         }
+        val infoboxes = this.infoboxes.toMutableList()
+        infoboxes.removeIf { it.hidden }
+
         return SectionDtoResponseClient(
                 id = this.id,
                 title = this.title,
@@ -174,7 +170,7 @@ class PageService(
                 text = this.text,
                 image = image,
                 hidden = this.hidden,
-                infoboxes = this.infoboxes.map { it.toResponseInfoboxClient() },
+                infoboxes = infoboxes.map { it.toResponseInfoboxClient() },
                 type = this.type.type
         )
     }
@@ -188,6 +184,14 @@ class PageService(
                 hidden = this.hidden,
 
         )
+    }
+    private fun setParentPage(page: String?): Page? {
+        if(page == null || page == ""){
+            return null
+        }
+        else {
+            return pageRepository.findPageByName(page)
+        }
     }
 
 

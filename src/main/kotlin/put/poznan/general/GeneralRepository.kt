@@ -8,5 +8,5 @@ interface GeneralRepository: JpaRepository<General, Long> {
     fun findGeneralByKey(key: String): General?
     fun findGeneralById(id: Long): General?
 
-    fun findGeneralByKeyContaining(partKey: String): List<General>
+    fun findGeneralByKeyContainingAndHiddenIsFalse(partKey: String): List<General>
 }

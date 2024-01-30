@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @EnableJpaRepositories
 interface InfoboxRepository: JpaRepository<Infobox, Long> {
     fun findInfoboxById(id: Long): Infobox?
-    fun findInfoboxByInformation(information: String): Infobox?
-    fun findInfoboxesByInformationStartingWith(partInformation: String): List<Infobox>
+    fun findInfoboxByInformationAndHiddenIsFalse(information: String): Infobox?
+    fun findInfoboxesByInformationStartingWithAndHiddenIsFalse(partInformation: String): List<Infobox>
 }
